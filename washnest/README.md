@@ -1,6 +1,6 @@
 # 🧺 Wash Nest
 
-Complete technology stack for **Wash Nest**, a local laundry shop in Marathalli, Bengaluru.
+Complete technology stack for **Wash Nest**, a local laundry shop in Banashankari, South Bengaluru.
 
 ## Architecture
 

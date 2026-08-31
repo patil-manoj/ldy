@@ -26,7 +26,7 @@ export function AreaCoverage() {
                     </svg>
                   </div>
                   <div>
-                    <div className="font-heading font-bold text-sm text-gray-900">East {siteConfig.addressRegion}</div>
+                    <div className="font-heading font-bold text-sm text-gray-900">{siteConfig.serviceArea}</div>
                     <div className="text-xs text-gray-500">{siteConfig.areas.length}+ areas covered</div>
                   </div>
                 </div>
@@ -45,7 +45,7 @@ export function AreaCoverage() {
             </h2>
             <p className="text-gray-500 max-w-lg text-lg leading-relaxed mb-10">
               We serve {siteConfig.areas.slice(0, -1).join(', ')} and {siteConfig.areas[siteConfig.areas.length - 1]} area and surrounding localities in
-              East {siteConfig.addressRegion}. If you&apos;re nearby, we&apos;ll come to you!
+              {' '}{siteConfig.serviceArea}. If you&apos;re nearby, we&apos;ll come to you!
             </p>
 
             <div className="flex flex-wrap gap-3 mb-10">

@@ -33,9 +33,9 @@ Open http://localhost:3000
 Create `.env.local`:
 
 ```env
-NEXT_PUBLIC_WHATSAPP_NUMBER=919876543210
-NEXT_PUBLIC_SHOP_ADDRESS=Your Shop Address, Marathalli, Bengaluru 560037
-NEXT_PUBLIC_SHOP_PHONE=+919876543210
+NEXT_PUBLIC_WHATSAPP_NUMBER=919596889663
+NEXT_PUBLIC_SHOP_ADDRESS=80 Feet Rd, Mysore Bank Colony, SBM Colony, Banashankari 1st Stage, Banashankari, Bengaluru, Karnataka 560050
+NEXT_PUBLIC_SHOP_PHONE=+919596889663
 ```
 
 ## Build
@@ -85,7 +85,7 @@ netlify deploy --prod --dir=out
 ## Updating Content
 
 - **Services/Pricing:** Edit `src/app/services/page.tsx`
-- **Areas:** Edit `src/components/AreaCoverage.tsx`
+- **Areas:** Update `NEXT_PUBLIC_AREAS_SERVED` in `.env.local`
 - **Phone/Address:** Update `.env.local` values
 - **Homepage sections:** Edit components in `src/components/`
 

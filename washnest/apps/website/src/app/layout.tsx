@@ -5,7 +5,7 @@ import WhatsAppFloat from '@/components/WhatsAppFloat';
 
 export const metadata: Metadata = {
   title: {
-    default: `Wash Nest – Laundry Service in Marathalli, Bengaluru | Pickup & Delivery`,
+    default: `${siteConfig.name} – Laundry Service in ${siteConfig.addressLocality}, Bengaluru | Pickup & Delivery`,
     template: `%s | Wash Nest`,
   },
   description: siteConfig.description,
@@ -17,6 +17,7 @@ export const metadata: Metadata = {
     `Wash Nest ${siteConfig.addressLocality}`, `WashNest ${siteConfig.addressLocality}`,
     'door step laundry', 'affordable laundry', `dry cleaning ${siteConfig.addressLocality}`,
     `laundry service Bengaluru`, `wash and fold ${siteConfig.addressLocality}`,
+    `laundry service ${siteConfig.serviceArea}`,
     ...siteConfig.areas.map(a => `laundry service ${a}`),
   ],
   icons: {

@@ -1,3 +1,5 @@
+import { siteConfig } from '@/lib/config';
+
 const reasons = [
   {
     icon: (
@@ -36,7 +38,7 @@ const reasons = [
       </svg>
     ),
     title: 'Local & Trusted',
-    desc: `Your neighbourhood laundry in ${process.env.NEXT_PUBLIC_ADDRESS_LOCALITY || 'Marathalli'}. Known and loved.`,
+    desc: `Your neighbourhood laundry in ${siteConfig.addressLocality}. Known and loved.`,
   },
 ];
 
