@@ -2,6 +2,19 @@
   command = "npm run build"
   publish = "out"
 
+[build.environment]
+  NEXT_PUBLIC_BUSINESS_DESCRIPTION = "Wash Nest offers wash & fold, ironing, and pickup & delivery laundry service in Banashankari, South Bengaluru. Affordable prices, quick turnaround. Book on WhatsApp!"
+  NEXT_PUBLIC_WHATSAPP_NUMBER = "919596889663"
+  NEXT_PUBLIC_SHOP_PHONE = "+919596889663"
+  NEXT_PUBLIC_SHOP_ADDRESS = "80 Feet Rd, Mysore Bank Colony, SBM Colony, Banashankari 1st Stage, Banashankari, Bengaluru, Karnataka 560050"
+  NEXT_PUBLIC_ADDRESS_LOCALITY = "Banashankari"
+  NEXT_PUBLIC_POSTAL_CODE = "560050"
+  NEXT_PUBLIC_SERVICE_AREA = "South Bengaluru"
+  NEXT_PUBLIC_GEO_LATITUDE = "12.93902413112959"
+  NEXT_PUBLIC_GEO_LONGITUDE = "77.55187432998854"
+  NEXT_PUBLIC_GOOGLE_MAPS_EMBED_URL = "https://www.google.com/maps/embed?pb=!3m2!1sen!2sin!4v1788202388799!5m2!1sen!2sin!6m8!1m7!1sw9fgRO0KNASNbLraG-zeqA!2m2!1d12.93902413112959!2d77.55187432998854!3f10.562540868621284!4f7.18485816499755!5f0.7820865974627469"
+  NEXT_PUBLIC_AREAS_SERVED = "Banashankari,SBM Colony,Mysore Bank Colony,Basavanagudi,Jayanagar,JP Nagar"
+
 [[headers]]
   for = "/*"
   [headers.values]
