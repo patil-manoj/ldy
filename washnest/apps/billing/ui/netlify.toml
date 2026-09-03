@@ -1,6 +1,6 @@
 [build]
-  command = "npm --prefix apps/billing/ui run build"
-  publish = "apps/billing/static"
+  command = "npm --prefix washnest/apps/billing/ui run build"
+  publish = "washnest/apps/billing/static"
 
 [[headers]]
   for = "/sw.js"

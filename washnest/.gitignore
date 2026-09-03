@@ -6,7 +6,8 @@ __pycache__/
 
 # Environment
 .env
-.env.local
+.env.*
+!.env.example
 
 # Database
 *.db
@@ -18,10 +19,23 @@ __pycache__/
 apps/billing/static/
 apps/website/out/
 apps/website/.next/
+dist/
+coverage/
+
+# Tool caches
+.vite/
+.netlify/
+.vercel/
+.eslintcache
+*.tsbuildinfo
 
 # Logs
 logs/
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 
 # Backups (local copies)
 scripts/backups/

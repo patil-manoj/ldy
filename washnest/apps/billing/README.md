@@ -54,9 +54,12 @@ Yes, this is a frontend-only static app and works on Netlify without Functions o
 
 When importing this monorepo in Netlify:
 
-1. Set **Package directory** to `apps/billing/ui`.
+1. Set **Package directory** to `washnest/apps/billing/ui`.
 2. Leave **Base directory** empty so it remains the repository root.
-3. Netlify will read `apps/billing/ui/netlify.toml`, run the billing build, and publish `apps/billing/static`.
+3. Clear any **Publish directory** or **Build command** previously entered in the Netlify UI; the repository configuration supplies both.
+4. Netlify will read `washnest/apps/billing/ui/netlify.toml`, run the billing build, and publish `washnest/apps/billing/static`.
+
+If Netlify requires manual overrides, use build command `npm --prefix washnest/apps/billing/ui run build` and publish directory `washnest/apps/billing/static`. Do not use `apps/billing/ui` as the publish directory; that is a source path and also omits this repository's leading `washnest/` directory.
 
 Use the stable production URL, such as `your-site.netlify.app`, for real billing. Normal redeploys to that same URL keep the browser's IndexedDB records. Deploy Preview URLs, a custom domain, another browser, or another device each have separate storage. Export a backup before changing URL or device, then restore it at the new location.
 
