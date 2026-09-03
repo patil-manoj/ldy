@@ -1,5 +1,5 @@
 [build]
-  command = "npm --prefix washnest/apps/billing/ui run build"
+  command = "npm --prefix washnest/apps/billing/ui ci --include=dev && npm --prefix washnest/apps/billing/ui run build"
   publish = "washnest/apps/billing/static"
 
 [[headers]]
