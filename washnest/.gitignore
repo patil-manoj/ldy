@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+
+# Environment
+.env
+.env.local
+
+# Database
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# Build outputs
+apps/billing/static/
+apps/website/out/
+apps/website/.next/
+
+# Logs
+logs/
+*.log
+
+# Backups (local copies)
+scripts/backups/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
