@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Banknote, CreditCard, MessageCircle, Phone, Smartphone, Store } from 'lucide-react';
 import { getDailyReport } from '../api';
 
 export default function Reports() {
@@ -28,9 +29,9 @@ export default function Reports() {
         {/* Collections Breakdown */}
         <div className="card detail-section">
           <h3>Collections</h3>
-          <div className="detail-row"><span className="detail-row__label">💵 Cash</span><span className="detail-row__value">₹{report.cash_collected.toLocaleString('en-IN')}</span></div>
-          <div className="detail-row"><span className="detail-row__label">📱 UPI</span><span className="detail-row__value">₹{report.upi_collected.toLocaleString('en-IN')}</span></div>
-          <div className="detail-row"><span className="detail-row__label">💳 Card</span><span className="detail-row__value">₹{report.card_collected.toLocaleString('en-IN')}</span></div>
+          <div className="detail-row"><span className="detail-row__label label-with-icon"><Banknote size={15} aria-hidden="true" /> Cash</span><span className="detail-row__value">₹{report.cash_collected.toLocaleString('en-IN')}</span></div>
+          <div className="detail-row"><span className="detail-row__label label-with-icon"><Smartphone size={15} aria-hidden="true" /> UPI</span><span className="detail-row__value">₹{report.upi_collected.toLocaleString('en-IN')}</span></div>
+          <div className="detail-row"><span className="detail-row__label label-with-icon"><CreditCard size={15} aria-hidden="true" /> Card</span><span className="detail-row__value">₹{report.card_collected.toLocaleString('en-IN')}</span></div>
           <div className="detail-row" style={{ borderTop: '1px solid var(--border)', paddingTop: '.5rem', marginTop: '.5rem' }}>
             <span className="detail-row__label"><strong>Total Collected</strong></span>
             <span className="detail-row__value"><strong>₹{report.collected_revenue.toLocaleString('en-IN')}</strong></span>
@@ -40,9 +41,9 @@ export default function Reports() {
         {/* Order Sources */}
         <div className="card detail-section">
           <h3>Order Sources</h3>
-          <div className="detail-row"><span className="detail-row__label">🏪 Walk-in</span><span className="detail-row__value">{report.walkin_orders}</span></div>
-          <div className="detail-row"><span className="detail-row__label">📱 WhatsApp</span><span className="detail-row__value">{report.whatsapp_orders}</span></div>
-          <div className="detail-row"><span className="detail-row__label">📞 Phone</span><span className="detail-row__value">{report.phone_orders}</span></div>
+          <div className="detail-row"><span className="detail-row__label label-with-icon"><Store size={15} aria-hidden="true" /> Walk-in</span><span className="detail-row__value">{report.walkin_orders}</span></div>
+          <div className="detail-row"><span className="detail-row__label label-with-icon"><MessageCircle size={15} aria-hidden="true" /> WhatsApp</span><span className="detail-row__value">{report.whatsapp_orders}</span></div>
+          <div className="detail-row"><span className="detail-row__label label-with-icon"><Phone size={15} aria-hidden="true" /> Phone</span><span className="detail-row__value">{report.phone_orders}</span></div>
         </div>
 
         {/* Order Status */}

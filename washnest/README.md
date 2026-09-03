@@ -1,28 +1,17 @@
 # 🧺 Wash Nest
 
-Complete technology stack for **Wash Nest**, a local laundry shop in Banashankari, South Bengaluru.
+Technology stack for **Wash Nest**, a local laundry shop in Banashankari, South Bengaluru.
 
 ## Architecture
 
 ```
-Customer
-   │
-   ├─── Google Search / Maps → [Next.js Website on Vercel]
-   │                                  │ Click-to-WhatsApp CTA
-   │                                  ▼
-   └─────────────────────────── [WhatsApp]
-                                Meta Cloud API
-                                Webhook on Render.com (free)
-                                        │
-                                        │ POST /api/orders via Cloudflare Tunnel
-                                        ▼
-                              [Shop PC — Local System]
-                              FastAPI + SQLite
-                              Accessible at localhost:8000
-                              Exposed via Cloudflare Tunnel
-                                        │
-                                        ▼
-                              Google Drive (nightly backup)
+Customer → Next.js website → WhatsApp
+
+Owner phone/computer → React billing PWA on a static host
+                               │
+                               ├── IndexedDB records on that device
+                               ├── Print / WhatsApp bill sharing
+                               └── Manual JSON backup and restore
 ```
 
 ## Monorepo Structure
@@ -30,7 +19,7 @@ Customer
 ```
 washnest/
 ├── apps/
-│   ├── billing/          # FastAPI + SQLite — local billing system
+│   ├── billing/          # React PWA + IndexedDB — frontend-only billing
 │   └── website/          # Next.js 14 — public website (Vercel)
 ├── services/
 │   └── whatsapp-bot/     # Node.js webhook — WhatsApp bot (Render.com)
@@ -45,16 +34,15 @@ washnest/
 
 ## Quick Start
 
-### 1. Billing System (Shop PC)
+### 1. Billing System
 
 ```bash
-cd apps/billing
-pip install -r requirements.txt
-cp ../../.env.example .env   # Edit values
-uvicorn app.main:app --host 0.0.0.0 --port 8000
+cd apps/billing/ui
+npm install
+npm run dev
 ```
 
-Open http://localhost:8000 — the billing dashboard is served from here.
+Open http://127.0.0.1:5173. No Python process or database server is required.
 
 ### 2. Build the Billing UI
 
@@ -115,8 +103,8 @@ Schedule via Windows Task Scheduler for nightly runs.
 
 | Layer | Tool |
 |-------|------|
-| Billing backend | FastAPI + SQLite |
-| Billing UI | React (Vite) |
+| Billing app | React PWA (Vite) |
+| Billing storage | Browser IndexedDB + JSON export/import |
 | Website | Next.js 14 + Tailwind CSS |
 | WhatsApp bot | Node.js + Express |
 | Tunnel | Cloudflare Tunnel |

@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+import { Plus } from 'lucide-react';
 import { getPriceList, createPrice, updatePrice, deletePrice } from '../api';
+import { SERVICES, SERVICE_LABELS } from '../lib/billing';
 
-const SERVICES = ['wash_fold', 'iron', 'wash_iron', 'dry_clean'];
-const SERVICE_LABELS = { wash_fold: 'Wash & Fold', iron: 'Ironing', wash_iron: 'Wash & Iron', dry_clean: 'Dry Clean' };
 const CATEGORIES = ['clothing', 'bedding', 'household', 'accessories'];
 
 export default function PriceListPage() {
@@ -59,7 +59,7 @@ export default function PriceListPage() {
     <>
       <div className="page-header">
         <h1>Price List</h1>
-        <button className="btn btn--primary" onClick={openAdd}>+ Add Item</button>
+        <button className="btn btn--primary" type="button" onClick={openAdd}><Plus size={17} aria-hidden="true" /> Add item</button>
       </div>
 
       <div className="tabs">

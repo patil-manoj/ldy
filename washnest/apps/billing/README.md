@@ -1,106 +1,76 @@
-# Wash Nest — Billing System
+# Wash Nest Billing
 
-Local billing and order management system for the shop PC.
+Frontend-only billing and order management. The React app stores data in IndexedDB in the current browser, works offline after its first load, and does not call or require a backend.
 
-## Stack
+## Supported without a backend
 
-- **Backend:** FastAPI + SQLite (via SQLAlchemy)
-- **Frontend:** React (Vite), served by FastAPI as static files
-- **Logging:** Loguru → `logs/billing.log`
+- Create and search customers.
+- Create bills with seeded or custom prices.
+- Calculate weight rounding, discounts, delivery, express charges, and GST.
+- Record full or partial payments and order status history.
+- Permanently delete bills from the protected **Manage bills** page.
+- View orders, customer history, dashboard totals, expenses, and daily reports.
+- Print receipts and open a prepared bill in WhatsApp.
+- Install the app on a phone or computer as a PWA.
+- Export and restore all business data with a JSON backup.
 
-## Setup
+## Frontend-only limits
 
-### 1. Install Python Dependencies
-
-```bash
-cd apps/billing
-pip install -r requirements.txt
-```
-
-### 2. Environment Variables
-
-Create `.env` in `apps/billing/`:
-
-```env
-SECRET_KEY=your-random-secret-key
-TUNNEL_SECRET=shared-secret-for-whatsapp-bot
-CORS_ORIGINS=http://localhost:5173
-```
-
-### 3. Build the Frontend
-
-```bash
-cd ui
-npm install
-npm run build    # Outputs to ../static/
-```
-
-### 4. Run the Server
-
-```bash
-cd apps/billing
-uvicorn app.main:app --host 0.0.0.0 --port 8000
-```
-
-Open http://localhost:8000 in your browser.
-
-On first run, the database is created automatically and seeded with default prices.
+- Data belongs to one browser on one device. There is no automatic phone-to-computer or multi-device sync.
+- Clearing site data, uninstalling the browser, or losing the device can erase records unless a backup was downloaded.
+- The local admin password prevents casual access only. Browser code and data can be inspected or changed by someone with device access.
+- A frontend `.env` password would be included in the public JavaScript bundle, so it cannot provide secure authentication.
+- Automatic WhatsApp/SMS sending, automatic cloud backup, secure user accounts, tamper-proof audit logs, and concurrent terminals require a backend or managed cloud service.
 
 ## Development
 
-For frontend development with hot reload:
+Only Node.js is required:
 
 ```bash
-# Terminal 1 — API
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-
-# Terminal 2 — UI (proxies /api to port 8000)
-cd ui
+cd apps/billing/ui
+npm install
 npm run dev
 ```
 
-## API Endpoints
+Open http://127.0.0.1:5173. Default prices and settings are added automatically on the first visit.
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/customers` | Create customer |
-| GET | `/api/customers?phone=` | Lookup by phone |
-| GET | `/api/customers/{id}/orders` | Customer order history |
-| POST | `/api/orders` | Create order |
-| GET | `/api/orders` | List with filters |
-| GET | `/api/orders/{id}` | Order detail |
-| PATCH | `/api/orders/{id}/status` | Update status |
-| PATCH | `/api/orders/{id}/payment` | Mark as paid |
-| GET | `/api/price-list` | Get active prices |
-| POST | `/api/price-list` | Create price |
-| PUT | `/api/price-list/{id}` | Update price |
-| GET | `/api/dashboard` | Today's summary |
-| GET | `/api/reports/daily?report_date=` | Daily report |
+The default local admin password is `Washnest*123`. Change it from **Admin settings** after signing in.
 
-## Install as Windows Service
-
-Requires [NSSM](https://nssm.cc/download) in your PATH.
+## Production build
 
 ```bash
-# Run as Administrator
-install_service.bat
+cd apps/billing/ui
+npm install
+npm run build
 ```
 
-This installs `WashNestBilling` as a Windows service that:
-- Auto-starts on boot
-- Runs on port 8000
-- Logs to `logs/`
+The deployable static app is written to `apps/billing/static/`. Upload that directory to an HTTPS static host such as Netlify or Cloudflare Pages. The included `_redirects` file supplies the SPA fallback on Netlify.
 
-To manage:
-```bash
-nssm status WashNestBilling
-nssm stop WashNestBilling
-nssm start WashNestBilling
-nssm remove WashNestBilling confirm
-```
+PWA installation and local password hashing require HTTPS on a hosted site. Localhost is allowed during development.
 
-## Security
+## Deploy to Netlify
 
-- The tunnel secret middleware blocks external API requests without a valid `X-Tunnel-Secret` header
-- Local requests (127.0.0.1) are always allowed — so the billing UI works without the header
-- The billing UI is NOT exposed through the Cloudflare tunnel (only `/api/*` routes are)
+Yes, this is a frontend-only static app and works on Netlify without Functions or another backend.
+
+When importing this monorepo in Netlify:
+
+1. Set **Package directory** to `apps/billing/ui`.
+2. Leave **Base directory** empty so it remains the repository root.
+3. Netlify will read `apps/billing/ui/netlify.toml`, run the billing build, and publish `apps/billing/static`.
+
+Use the stable production URL, such as `your-site.netlify.app`, for real billing. Normal redeploys to that same URL keep the browser's IndexedDB records. Deploy Preview URLs, a custom domain, another browser, or another device each have separate storage. Export a backup before changing URL or device, then restore it at the new location.
+
+## Phone workflow
+
+1. Open the hosted HTTPS URL on the phone that will hold the billing records.
+2. Use the browser menu to add Wash Nest to the home screen.
+3. Open an Administration page and unlock it with `Washnest*123`.
+4. Change the password in **Admin settings**.
+5. Enter shop details and prices, then create and send bills from the app.
+6. Download a JSON backup regularly from **Admin settings > Local data**.
+
+Each hostname has separate browser storage. Export a backup before changing the deployed URL, browser, phone, or later moving to a computer, then restore it on the new device.
+
+## Backups
+
+The JSON backup contains customers, bills, payments, order history, prices, expenses, and business settings. It does not contain the local admin password. Restoring a backup replaces all business data in the current browser.

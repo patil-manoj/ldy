@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+import { Plus } from 'lucide-react';
 import { getExpenses, createExpense, deleteExpense } from '../api';
 
 const CATEGORIES = ['detergent', 'rent', 'salary', 'electricity', 'water', 'packaging', 'transport', 'maintenance', 'equipment', 'other'];
@@ -46,7 +47,7 @@ export default function Expenses() {
     <>
       <div className="page-header">
         <h1>Expenses</h1>
-        <button className="btn btn--primary" onClick={() => setShowModal(true)}>+ Add Expense</button>
+        <button className="btn btn--primary" type="button" onClick={() => setShowModal(true)}><Plus size={17} aria-hidden="true" /> Add expense</button>
       </div>
 
       <form onSubmit={handleFilter} className="filters">

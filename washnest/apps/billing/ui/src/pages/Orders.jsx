@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Plus, Zap } from 'lucide-react';
 import { getOrders } from '../api';
 
 const STATUSES = ['', 'received', 'picked_up', 'processing', 'ready', 'out_for_delivery', 'delivered', 'cancelled'];
@@ -27,7 +28,7 @@ export default function Orders() {
     <>
       <div className="page-header">
         <h1>Orders</h1>
-        <Link to="/orders/new" className="btn btn--primary">+ New Order</Link>
+        <Link to="/orders/new" className="btn btn--primary"><Plus size={17} aria-hidden="true" /> New bill</Link>
       </div>
 
       <div className="filters">
@@ -83,7 +84,7 @@ export default function Orders() {
                   <tr key={o.id}>
                     <td>
                       <Link to={`/orders/${o.id}`}><strong>{o.order_number}</strong></Link>
-                      {o.is_express && <span className="badge badge--express" style={{ marginLeft: 6 }}>⚡</span>}
+                      {o.is_express && <span className="badge badge--express" style={{ marginLeft: 6 }} aria-label="Express order"><Zap size={12} aria-hidden="true" /></span>}
                     </td>
                     <td>
                       <div>{o.customer?.name || '—'}</div>
