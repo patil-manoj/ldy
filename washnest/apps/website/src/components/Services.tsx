@@ -5,7 +5,7 @@ const services = [
     title: 'Wash & Fold',
     description: 'We wash, dry, and neatly fold your clothes with premium detergents. Fresh, clean, and ready to wear.',
     image: 'https://images.unsplash.com/photo-1572501403253-c113f1d6c7fe?auto=format&fit=crop&w=800&q=80',
-    price: 'From ₹20/piece',
+    price: '₹80/kg (min. 5 kg)',
     icon: (
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <rect x="1" y="1" width="22" height="22" rx="4" />

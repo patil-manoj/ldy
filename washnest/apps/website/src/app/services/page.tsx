@@ -7,7 +7,7 @@ import { siteConfig } from '@/lib/config';
 export const metadata: Metadata = {
   title: `Laundry Services & Pricing in ${siteConfig.addressLocality} – Wash, Iron, Pickup & Delivery`,
   description:
-    `Affordable laundry services in ${siteConfig.addressLocality}: Wash & Fold from ₹20, Ironing from ₹10, free pickup & delivery. Serving ${siteConfig.areas.join(', ')}. Book on WhatsApp!`,
+    `Laundry services in ${siteConfig.addressLocality}: washing at ₹80/kg (minimum 5 kg), ironing, dry cleaning, and free pickup & delivery. Serving ${siteConfig.areas.join(', ')}. Book on WhatsApp!`,
   alternates: { canonical: '/services/' },
 };
 
@@ -27,34 +27,29 @@ const servicePageJsonLd = {
     itemListElement: [
       {
         '@type': 'OfferCatalog',
-        name: 'Wash & Fold',
+        name: 'Washing',
         itemListElement: [
-          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Shirt / T-Shirt Wash & Fold' }, price: '20', priceCurrency: 'INR' },
-          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Trousers Wash & Fold' }, price: '25', priceCurrency: 'INR' },
-          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Jeans Wash & Fold' }, price: '30', priceCurrency: 'INR' },
-          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Saree Wash & Fold' }, price: '50', priceCurrency: 'INR' },
-          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Bedsheet (Single) Wash & Fold' }, price: '40', priceCurrency: 'INR' },
-          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Bedsheet (Double) Wash & Fold' }, price: '60', priceCurrency: 'INR' },
-          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Blanket Wash & Fold' }, price: '100', priceCurrency: 'INR' },
+          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Mixed Clothes Washing (minimum 5 kg)' }, price: '80', priceCurrency: 'INR', unitCode: 'KGM' },
+          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Bedsheet Washing (up to 5 kg)' }, price: '400', priceCurrency: 'INR' },
+          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Double Blanket Washing' }, price: '350', priceCurrency: 'INR' },
         ],
       },
       {
         '@type': 'OfferCatalog',
-        name: 'Ironing / Steam Press',
+        name: 'Ironing',
         itemListElement: [
-          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Shirt Ironing' }, price: '10', priceCurrency: 'INR' },
-          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Trousers / Jeans Ironing' }, price: '15', priceCurrency: 'INR' },
-          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Saree Ironing' }, price: '30', priceCurrency: 'INR' },
-          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Suit (2-piece) Ironing' }, price: '50', priceCurrency: 'INR' },
+          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Pant Ironing' }, price: '15', priceCurrency: 'INR' },
+          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Shirt Ironing' }, price: '15', priceCurrency: 'INR' },
+          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Saree Ironing' }, price: '60', priceCurrency: 'INR' },
         ],
       },
       {
         '@type': 'OfferCatalog',
-        name: 'Wash & Iron',
+        name: "Dry Cleaning - Women's Wear",
         itemListElement: [
-          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Shirt Wash & Iron' }, price: '30', priceCurrency: 'INR' },
-          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Trousers Wash & Iron' }, price: '35', priceCurrency: 'INR' },
-          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Saree Wash & Iron' }, price: '70', priceCurrency: 'INR' },
+          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Tops Dry Cleaning' }, price: '175', priceCurrency: 'INR' },
+          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Saree Dry Cleaning' }, price: '300', priceCurrency: 'INR' },
+          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Bridal Gown Dry Cleaning' }, price: '450', priceCurrency: 'INR' },
         ],
       },
     ],
@@ -79,7 +74,7 @@ const servicesFaqJsonLd = {
       name: `How much does laundry cost in ${siteConfig.addressLocality}?`,
       acceptedAnswer: {
         '@type': 'Answer',
-        text: `At ${siteConfig.name}, wash & fold starts at ₹20 per piece, ironing from ₹10 per piece, and wash & iron from ₹30 per piece. Pickup and delivery is free across ${siteConfig.areas.join(', ')}.`,
+        text: `At ${siteConfig.name}, washing is ₹80/kg with a minimum order of 5 kg. We also offer ironing and dry cleaning with the prices shown on this page. Pickup and delivery is free across ${siteConfig.areas.join(', ')}.`,
       },
     },
     {
@@ -103,41 +98,68 @@ const servicesFaqJsonLd = {
 
 const pricing = [
   {
-    category: 'Wash & Fold',
+    category: 'Washing',
     image: 'https://images.unsplash.com/photo-1582735689369-4fe89db7114c?auto=format&fit=crop&w=400&q=80',
     accent: 'from-primary to-primary-dark',
     items: [
-      ['Shirt / T-Shirt', '₹20'],
-      ['Trousers', '₹25'],
-      ['Jeans', '₹30'],
-      ['Saree', '₹50'],
-      ['Bedsheet (Single)', '₹40'],
-      ['Bedsheet (Double)', '₹60'],
-      ['Blanket', '₹100'],
+      ['Mixed Clothes (minimum 5 kg)', '₹80/kg'],
+      ['Bedsheet (up to 5 kg)', '₹400'],
+      ['Blanket (Double)', '₹350'],
+      ['Blanket (Single)', '₹300'],
+      ['Comforter', '₹400'],
+      ['Curtain (up to 5 kg)', '₹400'],
+      ['Soft Toys (up to 4 kg)', '₹350'],
+      ['Sofa Covers (up to 4 kg)', '₹350'],
+      ['Door Mats (up to 4 kg)', '₹400'],
+      ['Shoes - Washing (1 pair)', '₹250'],
+      ['Floor Carpet', '₹30/sq ft'],
     ],
   },
   {
-    category: 'Ironing / Steam Press',
+    category: 'Ironing',
     image: 'https://images.unsplash.com/photo-1489274495757-95c7c837b101?auto=format&fit=crop&w=400&q=80',
     accent: 'from-accent to-accent-dark',
     items: [
-      ['Shirt / T-Shirt', '₹10'],
-      ['Trousers / Jeans', '₹15'],
-      ['Saree', '₹30'],
-      ['Suit (2-piece)', '₹50'],
-      ['Kurta', '₹15'],
+      ['Pant', '₹15'], ['Shirt', '₹15'], ['Chudidhar (3 pcs)', '₹60'], ['Top Single', '₹20'],
+      ['Bottom', '₹15'], ['Saree', '₹60'], ['Blouse', '₹10'], ['Dhoti Cotton', '₹25'],
+      ['Dhoti Silk', '₹30'], ['Bed Sheet Single', '₹40'], ['Bed Sheet Double', '₹50'],
+      ['Curtains (Small)', '₹80'], ['Curtains (Big)', '₹100'], ['Pillow Cover', '₹10'],
+      ['Towel', '₹15'], ['Pajama Suit', '₹50'], ['Blazer', '₹50'], ['Waistcoat', '₹30'],
+      ['Dupatta', '₹25'], ['Skirts', '₹50'], ['Bridal Gown', '₹120'], ['Long Frock', '₹40'],
+      ['Anarkali', '₹60'], ['Sofa Cover', '₹30'], ['Kids Dress (Boys) - Each', '₹10'],
+      ['Kids Dress (Girls) - Each', '₹15'],
     ],
   },
   {
-    category: 'Wash & Iron',
+    category: "Dry Cleaning - Women's Wear",
     image: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?auto=format&fit=crop&w=400&q=80',
     accent: 'from-primary-700 to-primary-900',
     items: [
-      ['Shirt / T-Shirt', '₹30'],
-      ['Trousers', '₹35'],
-      ['Jeans', '₹40'],
-      ['Saree', '₹70'],
-      ['Suit (2-piece)', '₹120'],
+      ['Tops', '₹175'], ['Saree', '₹300'], ['Blouse', '₹150'], ['Dupatta', '₹150'],
+      ['Anarkali', '₹350'], ['Bridal Gown', '₹450'], ['Skirt', '₹150'],
+      ['Salwar Kameez (2 pcs)', '₹250'], ['Salwar Kameez (3 pcs)', '₹350'],
+      ['Regular Kids Wear', '₹200'], ['Long Frock', '₹350'],
+    ],
+  },
+  {
+    category: 'Dry Cleaning - Household',
+    image: 'https://images.unsplash.com/photo-1583845112203-454c8a3b7b17?auto=format&fit=crop&w=400&q=80',
+    accent: 'from-primary-700 to-primary-900',
+    items: [
+      ['Bed Sheet Single', '₹250'], ['Bed Sheet Double', '₹350'], ['Single Blanket', '₹400'],
+      ['Double Blanket', '₹500'], ['Jumbo Blanket', '₹600'], ['Soft Toy', '₹250'],
+      ['School Bag', '₹250'], ['Curtains up to 4 feet', '₹150'], ['Curtains up to 7 feet', '₹250'],
+      ['Curtains up to 10 feet', '₹450'], ['Curtains up to 12 feet', '₹550'], ['Pillow', '₹350'],
+    ],
+  },
+  {
+    category: "Dry Cleaning - Men's Wear",
+    image: 'https://images.unsplash.com/photo-1598808503746-f34c53b9323e?auto=format&fit=crop&w=400&q=80',
+    accent: 'from-accent to-accent-dark',
+    items: [
+      ['Pants', '₹150'], ['Shirts', '₹150'], ['Dhoti', '₹150'], ['Pyjama Set', '₹300'],
+      ['Suit (2 pcs)', '₹350'], ['Suit (3 pcs)', '₹450'], ['Blazer', '₹300'],
+      ['Jerkin / Jacket', '₹300'], ['Leather Jacket', '₹450'], ['Waistcoat', '₹200'],
     ],
   },
 ];
@@ -174,7 +196,7 @@ export default function ServicesPage() {
         {/* Pricing cards */}
         <section className="py-24 sm:py-32 bg-gradient-to-b from-white to-primary-50/20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6">
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {pricing.map((group) => (
                 <div key={group.category} className="group bg-white rounded-3xl overflow-hidden shadow-soft hover:shadow-card-hover transition-all duration-500 hover:-translate-y-1 border border-gray-100">
                   <div className="relative h-44 overflow-hidden">
@@ -199,7 +221,7 @@ export default function ServicesPage() {
               ))}
             </div>
             <p className="text-center text-gray-400 text-sm mt-10">
-              Prices may vary for special items. Contact us on WhatsApp for bulk or custom orders.
+              Minimum washing order is 5 kg. Contact us on WhatsApp: {siteConfig.phone} for bulk or custom orders.
             </p>
           </div>
         </section>

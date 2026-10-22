@@ -14,7 +14,7 @@ export const siteConfig = {
   tagline: process.env.NEXT_PUBLIC_BUSINESS_TAGLINE || 'Laundry & Ironing, Picked Up From Your Door',
   description:
     process.env.NEXT_PUBLIC_BUSINESS_DESCRIPTION ||
-    'Wash Nest – Affordable laundry & ironing service in Banashankari, South Bengaluru. Wash & fold from ₹20, with free pickup & delivery in nearby areas. Book on WhatsApp!',
+    'Wash Nest – Professional washing at ₹80/kg (minimum 5 kg), ironing, and dry cleaning in Banashankari, South Bengaluru. Book on WhatsApp!',
   url: process.env.NEXT_PUBLIC_SITE_URL || 'https://washnest.netlify.app',
   whatsappNumber: WA_NUMBER,
   whatsappLink: `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(WA_MESSAGE)}`,

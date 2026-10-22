@@ -102,18 +102,17 @@ const jsonLd = {
     itemListElement: [
       {
         '@type': 'OfferCatalog',
-        name: 'Wash & Fold',
+        name: 'Washing',
         itemListElement: [
-          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Shirt / T-Shirt Wash & Fold', description: 'Professional washing, drying and folding of shirts and t-shirts' }, price: '20', priceCurrency: 'INR' },
-          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Trousers Wash & Fold' }, price: '25', priceCurrency: 'INR' },
-          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Bedsheet Wash & Fold' }, price: '40', priceCurrency: 'INR' },
+          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Mixed Clothes Washing (minimum 5 kg)' }, price: '80', priceCurrency: 'INR', unitCode: 'KGM' },
+          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Bedsheet Washing (up to 5 kg)' }, price: '400', priceCurrency: 'INR' },
         ],
       },
       {
         '@type': 'OfferCatalog',
         name: 'Ironing / Steam Press',
         itemListElement: [
-          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Shirt Ironing / Steam Press' }, price: '10', priceCurrency: 'INR' },
+          { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Shirt Ironing / Steam Press' }, price: '15', priceCurrency: 'INR' },
           { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Trousers Ironing' }, price: '15', priceCurrency: 'INR' },
         ],
       },

@@ -3,7 +3,7 @@ import { siteConfig } from '@/lib/config';
 const faqs = [
   {
     q: `What is the cost of laundry service in ${siteConfig.addressLocality}?`,
-    a: `${siteConfig.name} offers affordable laundry services starting at ₹20 per piece for wash & fold, and ₹10 per piece for ironing. We provide free pickup and delivery across ${siteConfig.areas.join(', ')}.`,
+    a: `${siteConfig.name} offers washing at ₹80/kg with a minimum order of 5 kg, ironing from ₹10 per piece, and transparent dry-cleaning prices. We provide free pickup and delivery across ${siteConfig.areas.join(', ')}.`,
   },
   {
     q: `Do you offer pickup and delivery laundry service near ${siteConfig.addressLocality}?`,
@@ -19,7 +19,7 @@ const faqs = [
   },
   {
     q: `What laundry services does ${siteConfig.name} offer?`,
-    a: `${siteConfig.name} offers Wash & Fold (from ₹20/piece), Ironing & Steam Press (from ₹10/piece), Wash & Iron (from ₹30/piece), and free Pickup & Delivery. We handle all types of garments including shirts, trousers, sarees, bedsheets, and blankets.`,
+    a: `${siteConfig.name} offers washing at ₹80/kg (minimum 5 kg), ironing, dry cleaning for women's wear, household items and men's wear, plus free pickup and delivery. See our complete price list for every item.`,
   },
   {
     q: 'How long does the laundry service take?',
