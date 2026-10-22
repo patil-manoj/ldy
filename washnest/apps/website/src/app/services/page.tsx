@@ -132,7 +132,7 @@ const pricing = [
   },
   {
     category: "Dry Cleaning - Women's Wear",
-    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?auto=format&fit=crop&w=400&q=80',
+    image: 'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?auto=format&fit=crop&w=400&q=80',
     accent: 'from-primary-700 to-primary-900',
     items: [
       ['Tops', '₹175'], ['Saree', '₹300'], ['Blouse', '₹150'], ['Dupatta', '₹150'],
@@ -143,7 +143,7 @@ const pricing = [
   },
   {
     category: 'Dry Cleaning - Household',
-    image: 'https://images.unsplash.com/photo-1583845112203-454c8a3b7b17?auto=format&fit=crop&w=400&q=80',
+    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?auto=format&fit=crop&w=400&q=80',
     accent: 'from-primary-700 to-primary-900',
     items: [
       ['Bed Sheet Single', '₹250'], ['Bed Sheet Double', '₹350'], ['Single Blanket', '₹400'],
