@@ -1,7 +1,7 @@
 export const SERVICES = ['wash_fold', 'iron', 'wash_iron', 'dry_clean'];
 
 export const SERVICE_LABELS = {
-  wash_fold: 'Wash & Fold',
+  wash_fold: 'Washing',
   iron: 'Ironing',
   wash_iron: 'Wash & Iron',
   dry_clean: 'Dry Clean',

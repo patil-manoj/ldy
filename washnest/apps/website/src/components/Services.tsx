@@ -2,8 +2,8 @@ import { siteConfig } from '@/lib/config';
 
 const services = [
   {
-    title: 'Wash & Fold',
-    description: 'We wash, dry, and neatly fold your clothes with premium detergents. Fresh, clean, and ready to wear.',
+    title: 'Washing',
+    description: 'We wash, dry, and neatly care for your clothes with premium detergents. Fresh, clean, and ready to wear.',
     image: 'https://images.unsplash.com/photo-1572501403253-c113f1d6c7fe?auto=format&fit=crop&w=800&q=80',
     price: '₹80/kg (min. 5 kg)',
     icon: (
