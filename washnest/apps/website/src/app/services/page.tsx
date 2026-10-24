@@ -143,7 +143,7 @@ const pricing = [
   },
   {
     category: 'Dry Cleaning - Household',
-    image: 'https://images.unsplash.com/photo-1583845112203-454c8a3b7b17?auto=format&fit=crop&w=800&q=85',
+    image: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=800&q=85',
     accent: 'from-primary-700 to-primary-900',
     items: [
       ['Bed Sheet Single', '₹250'], ['Bed Sheet Double', '₹350'], ['Single Blanket', '₹400'],
