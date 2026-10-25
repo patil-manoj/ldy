@@ -14,6 +14,10 @@ export const metadata: Metadata = {
 const servicePageJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Service',
+  '@id': `${siteConfig.url}/services/#service`,
+  url: `${siteConfig.url}/services/`,
+  name: `Laundry services and pricing in ${siteConfig.addressLocality}`,
+  description: `Washing, ironing, dry cleaning, and free laundry pickup and delivery in ${siteConfig.areas.join(', ')}.`,
   serviceType: 'Laundry Service',
   provider: {
     '@type': 'LocalBusiness',

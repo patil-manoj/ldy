@@ -19,6 +19,17 @@ const contactBreadcrumbJsonLd = {
   ],
 };
 
+const contactPageJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ContactPage',
+  '@id': `${siteConfig.url}/contact/#contact`,
+  url: `${siteConfig.url}/contact/`,
+  name: `Contact ${siteConfig.name}`,
+  description: `Contact ${siteConfig.name} to arrange laundry pickup and delivery in ${siteConfig.areas.join(', ')}.`,
+  about: { '@id': `${siteConfig.url}/#business` },
+  mainEntity: { '@id': `${siteConfig.url}/#business` },
+};
+
 export default function ContactPage() {
   return (
     <>
@@ -138,6 +149,10 @@ export default function ContactPage() {
         </section>
       </main>
       <Footer />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(contactPageJsonLd) }}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(contactBreadcrumbJsonLd) }}

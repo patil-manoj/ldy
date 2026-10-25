@@ -26,6 +26,12 @@ export const metadata: Metadata = {
   },
   metadataBase: new URL(siteConfig.url),
   alternates: { canonical: '/' },
+  category: 'Laundry and dry cleaning',
+  formatDetection: {
+    telephone: true,
+    address: true,
+    email: false,
+  },
   openGraph: {
     title: `${siteConfig.name} – ${siteConfig.tagline} in ${siteConfig.addressLocality}, ${siteConfig.addressRegion}`,
     description: siteConfig.description,
@@ -59,9 +65,9 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
-  verification: {
-    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || 'EHt1V83XnuT3WVuSeVQVla1OzO8LQYueUAtiWeJc5Jg',
-  },
+  verification: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+    ? { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION }
+    : undefined,
 };
 
 const jsonLd = {
@@ -129,6 +135,19 @@ const jsonLd = {
     '@type': 'City',
     name: area,
   })),
+  makesOffer: [
+    {
+      '@type': 'Offer',
+      itemOffered: {
+        '@type': 'Service',
+        name: 'Laundry pickup and delivery',
+        serviceType: 'Laundry pickup and delivery',
+        areaServed: siteConfig.areas.map(area => ({ '@type': 'City', name: area })),
+      },
+      price: '0',
+      priceCurrency: 'INR',
+    },
+  ],
   serviceArea: {
     '@type': 'GeoCircle',
     geoMidpoint: {
@@ -154,6 +173,7 @@ const organizationJsonLd = {
     areaServed: 'IN',
     availableLanguage: ['English', 'Hindi', 'Kannada'],
   },
+  knowsAbout: ['Laundry washing', 'Ironing and steam pressing', 'Dry cleaning', 'Laundry pickup and delivery'],
 };
 
 const websiteJsonLd = {
@@ -163,6 +183,7 @@ const websiteJsonLd = {
   name: siteConfig.name,
   url: siteConfig.url,
   publisher: { '@id': `${siteConfig.url}/#organization` },
+  inLanguage: 'en-IN',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

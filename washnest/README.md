@@ -77,6 +77,15 @@ npm run dev            # Development
 npm run build          # Static export for Vercel
 ```
 
+#### SEO and domain setup
+
+The live site is currently served at `https://washnest.netlify.app`. Keep
+`NEXT_PUBLIC_SITE_URL` set to that URL until `washnest.in` is connected to the
+same deployment and no longer shows a parked-domain page. The canonical URLs,
+robots file, and sitemap all use this value. After connecting the custom domain,
+set `NEXT_PUBLIC_SITE_URL=https://washnest.in`, redeploy, and submit the sitemap
+at `https://washnest.in/sitemap.xml` in Google Search Console.
+
 ### 6. Nightly Backups
 
 ```bash

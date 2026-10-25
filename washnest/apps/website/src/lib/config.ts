@@ -7,7 +7,10 @@ const SHOP_PHONE = process.env.NEXT_PUBLIC_SHOP_PHONE || '+919596889663';
 const AREAS = (
   process.env.NEXT_PUBLIC_AREAS_SERVED ||
   'Banashankari,SBM Colony,Mysore Bank Colony,Basavanagudi,Jayanagar,JP Nagar'
-).split(',');
+)
+  .split(',')
+  .map(area => area.trim())
+  .filter(Boolean);
 
 export const siteConfig = {
   name: process.env.NEXT_PUBLIC_BUSINESS_NAME || 'Wash Nest',
@@ -15,7 +18,7 @@ export const siteConfig = {
   description:
     process.env.NEXT_PUBLIC_BUSINESS_DESCRIPTION ||
     'Wash Nest – Professional washing at ₹80/kg (minimum 5 kg), ironing, and dry cleaning in Banashankari, South Bengaluru. Book on WhatsApp!',
-  url: process.env.NEXT_PUBLIC_SITE_URL || 'https://washnest.netlify.app',
+  url: (process.env.NEXT_PUBLIC_SITE_URL || 'https://washnest.netlify.app').replace(/\/+$/, ''),
   whatsappNumber: WA_NUMBER,
   whatsappLink: `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(WA_MESSAGE)}`,
   phone: SHOP_PHONE,
