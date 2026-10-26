@@ -1,18 +1,73 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Banknote, BarChart3, CreditCard, Download, FileText, MessageCircle, Phone, Smartphone, Store } from 'lucide-react';
+import { Banknote, BarChart3, CreditCard, Download, FileText, MessageCircle, Phone, Smartphone, Store, TrendingUp } from 'lucide-react';
 import { getDailyReport, getExpenses, getOrders } from '../api';
 import { formatMoney } from '../lib/billing';
 
-const today = new Date().toISOString().split('T')[0];
-const monthStart = new Date();
-monthStart.setDate(1);
-const firstOfMonth = monthStart.toISOString().split('T')[0];
+const CHART_METRICS = {
+  orders: { label: 'Number of orders', shortLabel: 'Orders', format: (value) => String(Math.round(value)), color: '#2563eb' },
+  revenue: { label: 'Total revenue', shortLabel: 'Revenue', format: formatMoney, color: '#059669' },
+  profit: { label: 'Profit', shortLabel: 'Profit', format: formatMoney, color: '#7c3aed' },
+};
+
+function dateString(date) {
+  return date.toISOString().split('T')[0];
+}
+
+function getDateRange(preset) {
+  const end = new Date();
+  const start = new Date(end);
+  if (preset === 'week') start.setDate(end.getDate() - 6);
+  if (preset === 'month') start.setDate(end.getDate() - 29);
+  return { from: dateString(start), to: dateString(end) };
+}
+
+function getChartBuckets(from, to, orders, expenses, metric, grouping) {
+  const start = new Date(`${from}T00:00:00`);
+  const end = new Date(`${to}T00:00:00`);
+  const dayCount = Math.max(1, Math.round((end - start) / 86400000) + 1);
+  const bucketCount = grouping === 'day' ? dayCount : Math.ceil(dayCount / 7);
+  const buckets = Array.from({ length: bucketCount }, (_, index) => {
+    const bucketStart = new Date(start);
+    bucketStart.setDate(start.getDate() + (grouping === 'day' ? index : index * 7));
+    const bucketEnd = new Date(bucketStart);
+    bucketEnd.setDate(bucketStart.getDate() + (grouping === 'day' ? 0 : 6));
+    return {
+      label: grouping === 'day'
+        ? bucketStart.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })
+        : `${bucketStart.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}–${bucketEnd.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}`,
+      from: dateString(bucketStart),
+      to: dateString(bucketEnd > end ? end : bucketEnd),
+      orders: [],
+      expenses: [],
+    };
+  });
+  const bucketFor = (date) => {
+    const offset = Math.floor((new Date(`${date}T00:00:00`) - start) / 86400000);
+    return buckets[Math.min(buckets.length - 1, grouping === 'day' ? offset : Math.floor(offset / 7))];
+  };
+  orders.forEach((order) => {
+    const bucket = bucketFor(order.order_date || order.created_at.slice(0, 10));
+    if (bucket) bucket.orders.push(order);
+  });
+  expenses.forEach((expense) => {
+    const bucket = bucketFor(expense.date);
+    if (bucket) bucket.expenses.push(expense);
+  });
+  return buckets.map((bucket) => {
+    const revenue = bucket.orders.reduce((sum, order) => sum + Number(order.total_amount || 0), 0);
+    const expenseTotal = bucket.expenses.reduce((sum, expense) => sum + Number(expense.amount || 0), 0);
+    const profit = bucket.orders.reduce((sum, order) => sum + Number(order.amount_paid || 0), 0) - expenseTotal;
+    return { ...bucket, value: metric === 'orders' ? bucket.orders.length : metric === 'revenue' ? revenue : profit };
+  });
+}
 
 export default function Reports() {
-  const [range, setRange] = useState({ from: firstOfMonth, to: today });
+  const [range, setRange] = useState(getDateRange('week'));
   const [report, setReport] = useState(null);
   const [orders, setOrders] = useState([]);
   const [expenses, setExpenses] = useState([]);
+  const [chartPreset, setChartPreset] = useState('week');
+  const [chartMetric, setChartMetric] = useState('revenue');
   const [saved, setSaved] = useState(() => JSON.parse(localStorage.getItem('washnest-report-presets') || '[]'));
 
   useEffect(() => {
@@ -70,6 +125,19 @@ export default function Reports() {
   };
 
   const maxService = Math.max(...summary.services.map(([, value]) => value), 1);
+  const chartGrouping = range.from === range.to || (new Date(range.to) - new Date(range.from)) / 86400000 < 14 ? 'day' : 'week';
+  const chartBuckets = getChartBuckets(range.from, range.to, orders, expenses, chartMetric, chartGrouping);
+  const chartMax = Math.max(...chartBuckets.map((bucket) => bucket.value), 1);
+  const chartMetricInfo = CHART_METRICS[chartMetric];
+  const chartPoints = chartBuckets.map((bucket, index) => {
+    const x = chartBuckets.length === 1 ? 50 : (index / (chartBuckets.length - 1)) * 100;
+    const y = 100 - ((bucket.value / chartMax) * 84 + 8);
+    return `${x},${y}`;
+  }).join(' ');
+  const applyChartPreset = (preset) => {
+    setChartPreset(preset);
+    if (preset !== 'custom') setRange(getDateRange(preset));
+  };
 
   return (
     <>
@@ -83,10 +151,39 @@ export default function Reports() {
       </div>
 
       <div className="filters no-print">
-        <div className="form-group"><label htmlFor="report-from">From</label><input id="report-from" type="date" className="form-input" value={range.from} onChange={(event) => setRange({ ...range, from: event.target.value })} /></div>
-        <div className="form-group"><label htmlFor="report-to">To</label><input id="report-to" type="date" className="form-input" value={range.to} onChange={(event) => setRange({ ...range, to: event.target.value })} /></div>
+        <div className="form-group"><label htmlFor="report-from">From</label><input id="report-from" type="date" className="form-input" value={range.from} onChange={(event) => { setChartPreset('custom'); setRange({ ...range, from: event.target.value }); }} /></div>
+        <div className="form-group"><label htmlFor="report-to">To</label><input id="report-to" type="date" className="form-input" value={range.to} onChange={(event) => { setChartPreset('custom'); setRange({ ...range, to: event.target.value }); }} /></div>
         <div className="report-presets"><span>Saved filters</span>{saved.map((preset) => <button className="btn btn--sm btn--ghost" type="button" key={`${preset.from}-${preset.to}`} onClick={() => setRange(preset)}>{preset.from} → {preset.to}</button>)}</div>
       </div>
+
+      <section className="card analytics-chart">
+        <div className="analytics-chart__header">
+          <div className="section-heading section-heading--compact">
+            <span className="section-heading__icon"><TrendingUp size={18} aria-hidden="true" /></span>
+            <div><h2>Performance trend</h2><p>Track the business signals that matter most.</p></div>
+          </div>
+          <div className="analytics-chart__controls no-print">
+            <div className="chart-segmented" aria-label="Chart range">
+              {['week', 'month', 'custom'].map((preset) => <button key={preset} type="button" className={chartPreset === preset ? 'is-active' : ''} onClick={() => applyChartPreset(preset)}>{preset === 'week' ? 'Last 7 days' : preset === 'month' ? 'Last 30 days' : 'Custom'}</button>)}
+            </div>
+            <select className="form-select chart-metric" value={chartMetric} onChange={(event) => setChartMetric(event.target.value)} aria-label="Chart metric">
+              {Object.entries(CHART_METRICS).map(([key, metric]) => <option key={key} value={key}>{metric.label}</option>)}
+            </select>
+          </div>
+        </div>
+        <div className="chart-summary"><strong>{chartMetricInfo.format(chartBuckets.reduce((sum, bucket) => sum + bucket.value, 0))}</strong><span>{chartMetricInfo.shortLabel.toLowerCase()} during selected period</span></div>
+        <div className="line-chart" role="img" aria-label={`${chartMetricInfo.label} trend chart`}>
+          <div className="line-chart__scale"><span>{chartMetricInfo.format(chartMax)}</span><span>{chartMetricInfo.format(chartMax / 2)}</span><span>0</span></div>
+          <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            <defs><linearGradient id="chart-fill" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stopColor={chartMetricInfo.color} stopOpacity=".25" /><stop offset="100%" stopColor={chartMetricInfo.color} stopOpacity=".02" /></linearGradient></defs>
+            <line x1="0" x2="100" y1="8" y2="8" /><line x1="0" x2="100" y1="50" y2="50" /><line x1="0" x2="100" y1="92" y2="92" />
+            <polygon points={`0,100 ${chartPoints} 100,100`} fill="url(#chart-fill)" />
+            <polyline points={chartPoints} fill="none" stroke={chartMetricInfo.color} strokeWidth="2.5" vectorEffect="non-scaling-stroke" />
+            {chartBuckets.map((bucket, index) => <circle key={bucket.label} cx={chartBuckets.length === 1 ? 50 : (index / (chartBuckets.length - 1)) * 100} cy={100 - ((bucket.value / chartMax) * 84 + 8)} r="1.8" fill="#fff" stroke={chartMetricInfo.color} strokeWidth="1.5" vectorEffect="non-scaling-stroke"><title>{bucket.label}: {chartMetricInfo.format(bucket.value)}</title></circle>)}
+          </svg>
+          <div className="line-chart__labels">{chartBuckets.map((bucket) => <span key={bucket.label}>{bucket.label}</span>)}</div>
+        </div>
+      </section>
 
       <div className="stats-grid">
         <StatCard label="Orders in period" value={orders.length} />
