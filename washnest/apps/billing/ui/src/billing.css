@@ -576,3 +576,82 @@ tbody tr:last-child td { border-bottom: 0; }
   .dashboard-header .inline-actions .btn { flex: 1; }
   .stats-grid { grid-template-columns: 1fr; }
 }
+
+/* Reports workspace */
+.report-header h1 { font-size: 2rem; }
+.report-header .inline-actions { align-self: flex-start; }
+.report-filters { min-height: 82px; padding: .8rem 1rem; align-items: center; border: 0; border-radius: 14px; box-shadow: var(--shadow); }
+.report-filters__title { min-width: 220px; display: flex; align-items: center; gap: .65rem; margin-right: .25rem; }
+.report-filters__title > span:last-child { display: flex; flex-direction: column; }
+.report-filters__title strong { font: 600 .8rem 'Outfit', sans-serif; }
+.report-filters__title small { margin-top: .12rem; color: var(--text-muted); font-size: .65rem; }
+.report-filters__icon { width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center; color: var(--primary); background: var(--primary-bg); border-radius: 9px; }
+.report-filters .form-group { min-width: 148px; }
+.report-filters .form-input { min-height: 38px; background: #fbfcfe; }
+.report-overview { margin-bottom: 1.15rem; padding: 1.2rem 1.35rem; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; color: #fff; background: linear-gradient(120deg, #121c3b, #25346a); border-radius: 16px; box-shadow: 0 12px 28px rgba(18, 28, 59, .16); }
+.report-overview__intro { min-width: 190px; display: flex; align-items: center; gap: .7rem; }
+.report-overview__intro > div { display: flex; flex-direction: column; }
+.report-overview__intro strong { font: 600 .88rem 'Outfit', sans-serif; }
+.report-overview__intro span:last-child { margin-top: .18rem; color: #aebbe2; font-size: .67rem; }
+.report-overview__icon { width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center; color: #bfcaff; background: rgba(159, 177, 255, .16); border: 1px solid rgba(191, 202, 255, .2); border-radius: 10px; }
+.report-overview__metrics { flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: rgba(255,255,255,.15); }
+.report-overview__metrics > div { padding: .1rem 1.2rem; background: #1d2a55; }
+.report-overview__metrics span, .report-overview__metrics small { display: block; color: #aebbe2; font-size: .65rem; }
+.report-overview__metrics strong { display: block; margin: .25rem 0 .18rem; color: #fff; font: 700 1.22rem 'Outfit', sans-serif; }
+.report-overview__metrics small.is-down { color: #ffb1b1; }
+.analytics-chart { padding: 1.45rem 1.5rem 1.1rem; border-radius: 16px; }
+.analytics-chart__header { padding-bottom: 1rem; border-bottom: 1px solid #edf0f5; }
+.analytics-chart__header .section-heading { margin-bottom: 0; }
+.analytics-chart__controls { flex-wrap: wrap; justify-content: flex-end; }
+.chart-segmented { background: #f5f7fb; border-color: #e7eaf2; }
+.chart-segmented button.is-active { color: #fff; background: var(--primary); box-shadow: none; }
+.chart-summary { margin-top: 1.15rem; }
+.chart-summary strong { font-size: 1.55rem; }
+.line-chart { height: 274px; }
+.line-chart svg { height: 218px; }
+.report-stat-card { min-height: 134px; border: 0; }
+.report-stat-card__top { display: flex; align-items: center; gap: .55rem; }
+.report-stat-card__top > span { width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center; color: var(--primary); background: var(--primary-bg); border-radius: 8px; }
+.report-stat-card .stat-card__label { margin: 0; }
+.report-stat-card .stat-card__value { margin-top: .75rem; }
+.report-detail-card { min-height: 222px; }
+.report-detail-card__heading { display: flex; align-items: center; gap: .65rem; margin-bottom: .85rem; padding-bottom: .75rem; border-bottom: 1px solid #edf0f5; }
+.report-detail-card__heading > div { display: flex; flex-direction: column; }
+.report-detail-card__heading h3 { margin: 0; padding: 0; border: 0; color: var(--text); font: 600 .88rem 'Outfit', sans-serif; text-transform: none; letter-spacing: 0; }
+.report-detail-card__heading p, .report-card-heading p { margin-top: .15rem; color: var(--text-muted); font-size: .66rem; }
+.report-detail-card__icon { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border-radius: 9px; }
+.report-detail-card__icon--green { color: #159a69; background: #e4f8ef; }
+.report-detail-card__icon--blue { color: #3658d4; background: #e8edff; }
+.report-detail-card__icon--purple { color: #7c55c7; background: #f1eaff; }
+.report-service-card { min-height: 285px; }
+.report-card-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; color: var(--primary); }
+.report-card-heading h3 { color: var(--text); font: 600 .95rem 'Outfit', sans-serif; }
+.report-card-heading > svg { margin-top: .1rem; }
+.report-service-card .bar-list { margin-top: 1.35rem; gap: 1.05rem; }
+.report-service-card .bar-track { height: 8px; background: #eef1f7; }
+.report-service-card .bar-track span { background: linear-gradient(90deg, #516fe3, #91a6fa); }
+.report-service-card .detail-row { padding: .6rem 0; border-bottom: 1px solid #edf0f5; }
+.report-service-card .detail-row:last-of-type { border-bottom: 0; }
+
+@media (max-width: 860px) {
+  .report-header .inline-actions { align-self: stretch; }
+  .report-filters { align-items: stretch; }
+  .report-filters__title { width: 100%; }
+  .report-filters .form-group { flex: 1; }
+  .report-overview { align-items: flex-start; flex-direction: column; }
+  .report-overview__metrics { width: 100%; }
+}
+
+@media (max-width: 600px) {
+  .report-header .inline-actions { width: 100%; }
+  .report-header .inline-actions .btn { flex: 1; }
+  .report-filters .form-group { min-width: 0; }
+  .report-overview { padding: 1rem; }
+  .report-overview__metrics { grid-template-columns: 1fr; gap: .45rem; background: transparent; }
+  .report-overview__metrics > div { padding: .7rem; border-radius: 9px; }
+  .analytics-chart { padding: 1rem; }
+  .analytics-chart__controls { justify-content: flex-start; }
+  .chart-segmented { width: 100%; }
+  .chart-segmented button { flex: 1; }
+  .chart-metric { width: 100%; }
+}

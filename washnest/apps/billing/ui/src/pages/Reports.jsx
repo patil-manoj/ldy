@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Banknote, BarChart3, CreditCard, Download, FileText, MessageCircle, Phone, Smartphone, Store, TrendingUp } from 'lucide-react';
+import { ArrowUpRight, Banknote, BarChart3, CalendarRange, CreditCard, Download, FileText, Filter, MessageCircle, Phone, PieChart, Smartphone, Store, Target, TrendingUp, WalletCards } from 'lucide-react';
 import { getDailyReport, getExpenses, getOrders } from '../api';
 import { formatMoney } from '../lib/billing';
 
@@ -150,6 +150,7 @@ export default function Reports() {
   const chartMax = Math.max(...chartBuckets.map((bucket) => bucket.value), 1);
   const chartMetricInfo = CHART_METRICS[chartMetric];
   const change = (current, old) => old === 0 ? (current === 0 ? '—' : 'New') : `${current >= old ? '+' : ''}${Math.round(((current - old) / old) * 100)}%`;
+  const collectionRate = summary.revenue ? Math.round((summary.collected / summary.revenue) * 100) : 0;
   const chartPoints = chartBuckets.map((bucket, index) => {
     const x = chartBuckets.length === 1 ? 50 : (index / (chartBuckets.length - 1)) * 100;
     const y = 100 - ((bucket.value / chartMax) * 84 + 8);
@@ -162,8 +163,8 @@ export default function Reports() {
 
   return (
     <>
-      <div className="page-header">
-        <div><p className="eyebrow"><BarChart3 size={14} aria-hidden="true" /> Business intelligence</p><h1>Reports</h1></div>
+      <div className="page-header report-header">
+        <div><p className="eyebrow"><span className="eyebrow__dot" /> Business intelligence</p><h1>Reports & insights</h1><p className="page-subtitle">Understand your performance, spot trends, and make better decisions.</p></div>
         <div className="inline-actions no-print">
           <button className="btn btn--ghost" type="button" onClick={savePreset}>Save filter</button>
           <button className="btn btn--ghost" type="button" onClick={downloadCsv}><Download size={16} aria-hidden="true" /> CSV</button>
@@ -171,10 +172,20 @@ export default function Reports() {
         </div>
       </div>
 
-      <div className="filters no-print">
+      <div className="filters report-filters no-print">
+        <div className="report-filters__title"><span className="report-filters__icon"><CalendarRange size={16} /></span><span><strong>Reporting period</strong><small>Choose the window you want to analyse</small></span></div>
         <div className="form-group"><label htmlFor="report-from">From</label><input id="report-from" type="date" className="form-input" value={range.from} onChange={(event) => { setChartPreset('custom'); setRange({ ...range, from: event.target.value }); }} /></div>
         <div className="form-group"><label htmlFor="report-to">To</label><input id="report-to" type="date" className="form-input" value={range.to} onChange={(event) => { setChartPreset('custom'); setRange({ ...range, to: event.target.value }); }} /></div>
         <div className="report-presets"><span>Saved filters</span>{saved.map((preset) => <button className="btn btn--sm btn--ghost" type="button" key={`${preset.from}-${preset.to}`} onClick={() => setRange(preset)}>{preset.from} → {preset.to}</button>)}</div>
+      </div>
+
+      <div className="report-overview">
+        <div className="report-overview__intro"><span className="report-overview__icon"><PieChart size={20} /></span><div><strong>Business overview</strong><span>{range.from} to {range.to}</span></div></div>
+        <div className="report-overview__metrics">
+          <div><span>Revenue</span><strong>{formatMoney(summary.revenue)}</strong><small className={previous ? (change(summary.revenue, previous.revenue).startsWith('-') ? 'is-down' : '') : ''}>{previous ? `${change(summary.revenue, previous.revenue)} vs previous` : 'Selected period'}</small></div>
+          <div><span>Collected</span><strong>{formatMoney(summary.collected)}</strong><small>{collectionRate}% collection rate</small></div>
+          <div><span>Net after expenses</span><strong>{formatMoney(summary.net)}</strong><small>{formatMoney(summary.expenseTotal)} expenses</small></div>
+        </div>
       </div>
 
       <section className="card analytics-chart">
@@ -207,35 +218,35 @@ export default function Reports() {
       </section>
 
       <div className="stats-grid">
-        <StatCard label="Orders in period" value={orders.length} />
-        <StatCard label="Revenue" value={formatMoney(summary.revenue)} trend={previous && change(summary.revenue, previous.revenue)} />
-        <StatCard label="Collected" value={formatMoney(summary.collected)} accent="success" />
-        <StatCard label="Net after expenses" value={formatMoney(summary.net)} accent={summary.net >= 0 ? 'success' : 'danger'} trend={previous && change(summary.net, previous.profit)} />
+        <StatCard label="Orders in period" value={orders.length} icon={<Filter size={16} />} />
+        <StatCard label="Revenue" value={formatMoney(summary.revenue)} icon={<TrendingUp size={16} />} trend={previous && change(summary.revenue, previous.revenue)} />
+        <StatCard label="Collected" value={formatMoney(summary.collected)} icon={<WalletCards size={16} />} accent="success" />
+        <StatCard label="Net after expenses" value={formatMoney(summary.net)} icon={<Target size={16} />} accent={summary.net >= 0 ? 'success' : 'danger'} trend={previous && change(summary.net, previous.profit)} />
       </div>
 
       <div className="detail-grid" style={{ marginBottom: '1.5rem' }}>
-        <div className="card detail-section"><h3>Collections</h3>
+        <div className="card detail-section report-detail-card"><div className="report-detail-card__heading"><span className="report-detail-card__icon report-detail-card__icon--green"><WalletCards size={17} /></span><div><h3>Collections</h3><p>How customers paid</p></div></div>
           <Detail icon={<Banknote size={15} />} label="Cash" value={formatMoney(summary.cash)} />
           <Detail icon={<Smartphone size={15} />} label="UPI" value={formatMoney(summary.upi)} />
           <Detail icon={<CreditCard size={15} />} label="Card" value={formatMoney(summary.card)} />
           <Detail label="Total collected" value={formatMoney(summary.collected)} strong />
         </div>
-        <div className="card detail-section"><h3>Order sources</h3>
+        <div className="card detail-section report-detail-card"><div className="report-detail-card__heading"><span className="report-detail-card__icon report-detail-card__icon--blue"><Store size={17} /></span><div><h3>Order sources</h3><p>Where orders come from</p></div></div>
           <Detail icon={<Store size={15} />} label="Walk-in" value={summary.sourceCounts.walkin || 0} />
           <Detail icon={<MessageCircle size={15} />} label="WhatsApp" value={summary.sourceCounts.whatsapp || 0} />
           <Detail icon={<Phone size={15} />} label="Phone" value={summary.sourceCounts.phone || 0} />
           <Detail label="Outstanding" value={formatMoney(summary.revenue - summary.collected)} />
         </div>
-        <div className="card detail-section"><h3>Status mix</h3>
+        <div className="card detail-section report-detail-card"><div className="report-detail-card__heading"><span className="report-detail-card__icon report-detail-card__icon--purple"><PieChart size={17} /></span><div><h3>Status mix</h3><p>Current order distribution</p></div></div>
           {Object.entries(summary.statusCounts).map(([status, count]) => <Detail key={status} label={<span className={`badge badge--${status}`}>{status.replace(/_/g, ' ')}</span>} value={count} />)}
         </div>
       </div>
 
       <div className="report-columns">
-        <section className="card"><h3>Top services by revenue</h3><div className="bar-list">
+        <section className="card report-service-card"><div className="report-card-heading"><div><h3>Top services by revenue</h3><p>What is driving your sales</p></div><ArrowUpRight size={18} /></div><div className="bar-list">
           {summary.services.length === 0 ? <p className="empty">No service data in this period</p> : summary.services.map(([name, value]) => <div className="bar-row" key={name}><div className="bar-row__label"><span>{name}</span><strong>{formatMoney(value)}</strong></div><div className="bar-track"><span style={{ width: `${(value / maxService) * 100}%` }} /></div></div>)}
         </div></section>
-        <section className="card"><h3>Profit & loss</h3>
+        <section className="card report-service-card"><div className="report-card-heading"><div><h3>Profit & loss</h3><p>A simple view of your bottom line</p></div><TrendingUp size={18} /></div>
           <Detail label="Revenue" value={`+ ${formatMoney(summary.revenue)}`} />
           <Detail label="Expenses" value={`− ${formatMoney(summary.expenseTotal)}`} />
           <Detail label="Net" value={formatMoney(summary.net)} strong />
@@ -250,6 +261,6 @@ function Detail({ icon, label, value, strong }) {
   return <div className="detail-row"><span className={`detail-row__label ${icon ? 'label-with-icon' : ''}`}>{icon}{label}</span><span className="detail-row__value" style={strong ? { fontWeight: 700 } : undefined}>{value}</span></div>;
 }
 
-function StatCard({ label, value, accent, trend }) {
-  return <div className={`stat-card ${accent ? `stat-card--${accent}` : ''}`}><div className="stat-card__label">{label}</div><div className="stat-card__value">{value}</div>{trend && <div className={`stat-card__trend ${trend.startsWith('-') ? 'is-down' : ''}`}>{trend} vs previous period</div>}</div>;
+function StatCard({ label, value, accent, trend, icon }) {
+  return <div className={`stat-card report-stat-card ${accent ? `stat-card--${accent}` : ''}`}><div className="report-stat-card__top"><span>{icon}</span><div className="stat-card__label">{label}</div></div><div className="stat-card__value">{value}</div>{trend && <div className={`stat-card__trend ${trend.startsWith('-') ? 'is-down' : ''}`}>{trend} vs previous period</div>}</div>;
 }
