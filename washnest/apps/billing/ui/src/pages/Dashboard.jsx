@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { AlertCircle, ArrowRight, Clock3, PackageCheck, Plus, Receipt, TrendingUp, WalletCards } from 'lucide-react';
+import { AlertCircle, ArrowRight, CheckCircle2, Clock3, PackageCheck, Plus, Receipt, Sparkles, TrendingUp, WalletCards } from 'lucide-react';
 import { getDashboard, getOrders } from '../api';
 import { formatMoney } from '../lib/billing';
 
@@ -15,16 +15,14 @@ export default function Dashboard() {
 
   if (!data) return <p>Loading…</p>;
 
+  const today = new Intl.DateTimeFormat('en-IN', {
+    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+  }).format(new Date());
   const stats = [
-    { label: "Today's Orders", value: data.total_orders_today, cls: 'stat-card--primary' },
-    { label: "Today's Revenue", value: formatMoney(data.revenue_today), cls: 'stat-card--success' },
-    { label: 'Collected Today', value: formatMoney(data.collected_today), cls: 'stat-card--success' },
-    { label: 'Pending Pickups', value: data.pending_pickups, cls: 'stat-card--warning' },
-    { label: 'Processing', value: data.in_progress, cls: 'stat-card--purple' },
-    { label: 'Ready for Delivery', value: data.pending_deliveries, cls: 'stat-card--success' },
-    { label: 'Express Orders', value: data.express_orders, cls: 'stat-card--warning' },
-    { label: 'Total Customers', value: data.total_customers, cls: '' },
-    { label: 'Outstanding', value: formatMoney(data.outstanding_total), cls: data.outstanding_total > 0 ? 'stat-card--danger' : '' },
+    { label: "Today's revenue", value: formatMoney(data.revenue_today), meta: `${data.total_orders_today} orders today`, icon: TrendingUp, tone: 'blue' },
+    { label: 'Collected today', value: formatMoney(data.collected_today), meta: data.revenue_today ? `${Math.round((data.collected_today / data.revenue_today) * 100)}% collection rate` : 'No collections yet', icon: CheckCircle2, tone: 'green' },
+    { label: 'Outstanding', value: formatMoney(data.outstanding_total), meta: 'Across active orders', icon: WalletCards, tone: data.outstanding_total ? 'amber' : 'green' },
+    { label: 'Active customers', value: data.total_customers, meta: `${data.express_orders} express orders`, icon: Sparkles, tone: 'purple' },
   ];
   const workflow = [
     { key: 'received', label: 'New', value: recentOrders.filter((order) => order.status === 'received').length, icon: Receipt },
@@ -37,26 +35,36 @@ export default function Dashboard() {
 
   return (
     <>
-      <div className="page-header">
-        <h1>Dashboard</h1>
-        <Link to="/orders/new" className="btn btn--primary btn--lg"><Plus size={18} aria-hidden="true" /> New bill</Link>
+      <div className="page-header dashboard-header">
+        <div>
+          <p className="eyebrow"><span className="eyebrow__dot" /> {today}</p>
+          <h1>Good morning, Wash Nest <span aria-hidden="true">✦</span></h1>
+          <p className="page-subtitle">Here’s the pulse of your laundry business today.</p>
+        </div>
+        <div className="inline-actions">
+          <Link to="/reports" className="btn btn--ghost">View reports <ArrowRight size={16} aria-hidden="true" /></Link>
+          <Link to="/orders/new" className="btn btn--primary btn--lg"><Plus size={18} aria-hidden="true" /> New bill</Link>
+        </div>
       </div>
 
       <div className="stats-grid">
         {stats.map((stat) => (
-          <div key={stat.label} className={`stat-card ${stat.cls}`}>
-            <div className="stat-card__label">{stat.label}</div>
+          <div key={stat.label} className={`stat-card stat-card--${stat.tone}`}>
+            <div className="stat-card__top"><span className="stat-card__icon"><stat.icon size={17} aria-hidden="true" /></span><span className="stat-card__label">{stat.label}</span></div>
             <div className="stat-card__value">{stat.value}</div>
+            <div className="stat-card__meta">{stat.meta}</div>
           </div>
         ))}
       </div>
 
       <div className="dashboard-grid">
-        <section className="card dashboard-card dashboard-card--accent">
+        <section className="card dashboard-card dashboard-card--accent dashboard-pulse">
           <div className="section-heading section-heading--compact">
             <span className="section-heading__icon"><TrendingUp size={18} aria-hidden="true" /></span>
-            <div><h2>Today at a glance</h2><p>Keep the floor moving with the most important numbers.</p></div>
+            <div><h2>Today at a glance</h2><p>A quick read on today’s performance.</p></div>
           </div>
+          <div className="pulse-value">{formatMoney(data.revenue_today)} <span>revenue</span></div>
+          <div className="pulse-bars" aria-hidden="true">{[42, 58, 45, 70, 56, 76, 64, 88, 72, 94, 82, 100].map((height, index) => <i key={index} style={{ height: `${height}%` }} />)}</div>
           <div className="dashboard-summary">
             <div><span>Average bill</span><strong>{formatMoney(data.total_orders_today ? data.revenue_today / data.total_orders_today : 0)}</strong></div>
             <div><span>Collection rate</span><strong>{data.revenue_today ? `${Math.round((data.collected_today / data.revenue_today) * 100)}%` : '0%'}</strong></div>
@@ -68,6 +76,7 @@ export default function Dashboard() {
           <div className="section-heading section-heading--compact">
             <span className="section-heading__icon"><Clock3 size={18} aria-hidden="true" /></span>
             <div><h2>Recent orders</h2><p>Latest bills and internal tokens.</p></div>
+            <Link to="/orders" className="section-heading__action">View all <ArrowRight size={14} /></Link>
           </div>
           {recentOrders.length === 0 ? <p className="empty">No orders yet</p> : (
             <div className="dashboard-orders">
