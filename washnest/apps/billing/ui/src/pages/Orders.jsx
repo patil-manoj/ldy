@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Plus, Zap } from 'lucide-react';
 import { getOrders } from '../api';
 
@@ -8,8 +8,14 @@ const PAYMENT_STATUSES = ['', 'unpaid', 'partial', 'paid'];
 const SOURCES = ['', 'walkin', 'whatsapp', 'phone'];
 
 export default function Orders() {
+  const [searchParams] = useSearchParams();
   const [orders, setOrders] = useState([]);
-  const [filters, setFilters] = useState({ status: '', payment_status: '', source: '', search: '' });
+  const [filters, setFilters] = useState({
+    status: searchParams.get('status') || '',
+    payment_status: searchParams.get('payment_status') || '',
+    source: '',
+    search: '',
+  });
   const [loading, setLoading] = useState(true);
 
   const load = () => {

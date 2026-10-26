@@ -491,6 +491,12 @@ export default function InvoiceDesk() {
               <strong>{customer?.name || 'Select a customer'}</strong>
               {customer && <small>{customer.phone}</small>}
             </div>
+            {settings.token_number_enabled !== 'false' && (
+              <div className="bill-preview__token">
+                <div><strong>Internal token</strong><small>Never shown on customer receipts or WhatsApp</small></div>
+                <input aria-label="Internal token number" className="form-input" placeholder="Optional" value={orderOptions.token_number} onChange={(event) => setOrderOptions((options) => ({ ...options, token_number: event.target.value }))} />
+              </div>
+            )}
 
             <div className="bill-lines">
               <div className="bill-lines__heading"><h2 id="bill-preview-heading">Bill items</h2><span>{items.length}</span></div>

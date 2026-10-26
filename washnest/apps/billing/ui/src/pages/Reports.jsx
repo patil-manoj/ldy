@@ -21,6 +21,17 @@ function getDateRange(preset) {
   return { from: dateString(start), to: dateString(end) };
 }
 
+function getPreviousRange(from, to) {
+  const start = new Date(`${from}T00:00:00`);
+  const end = new Date(`${to}T00:00:00`);
+  const days = Math.max(1, Math.round((end - start) / 86400000) + 1);
+  const previousEnd = new Date(start);
+  previousEnd.setDate(start.getDate() - 1);
+  const previousStart = new Date(previousEnd);
+  previousStart.setDate(previousEnd.getDate() - days + 1);
+  return { from: dateString(previousStart), to: dateString(previousEnd) };
+}
+
 function getChartBuckets(from, to, orders, expenses, metric, grouping) {
   const start = new Date(`${from}T00:00:00`);
   const end = new Date(`${to}T00:00:00`);
@@ -66,19 +77,28 @@ export default function Reports() {
   const [report, setReport] = useState(null);
   const [orders, setOrders] = useState([]);
   const [expenses, setExpenses] = useState([]);
+  const [previous, setPrevious] = useState(null);
   const [chartPreset, setChartPreset] = useState('week');
   const [chartMetric, setChartMetric] = useState('revenue');
   const [saved, setSaved] = useState(() => JSON.parse(localStorage.getItem('washnest-report-presets') || '[]'));
 
   useEffect(() => {
+    const previousRange = getPreviousRange(range.from, range.to);
     Promise.all([
       getDailyReport(range.to),
       getOrders({ date_from: range.from, date_to: range.to, limit: 200 }),
       getExpenses({ date_from: range.from, date_to: range.to, limit: 200 }),
-    ]).then(([daily, filteredOrders, filteredExpenses]) => {
+      getOrders({ date_from: previousRange.from, date_to: previousRange.to, limit: 200 }),
+      getExpenses({ date_from: previousRange.from, date_to: previousRange.to, limit: 200 }),
+    ]).then(([daily, filteredOrders, filteredExpenses, previousOrders, previousExpenses]) => {
       setReport(daily);
       setOrders(filteredOrders);
       setExpenses(filteredExpenses);
+      setPrevious({
+        orders: previousOrders,
+        revenue: previousOrders.reduce((sum, order) => sum + Number(order.total_amount || 0), 0),
+        profit: previousOrders.reduce((sum, order) => sum + Number(order.amount_paid || 0), 0) - previousExpenses.reduce((sum, expense) => sum + Number(expense.amount || 0), 0),
+      });
     }).catch(console.error);
   }, [range.from, range.to]);
 
@@ -129,6 +149,7 @@ export default function Reports() {
   const chartBuckets = getChartBuckets(range.from, range.to, orders, expenses, chartMetric, chartGrouping);
   const chartMax = Math.max(...chartBuckets.map((bucket) => bucket.value), 1);
   const chartMetricInfo = CHART_METRICS[chartMetric];
+  const change = (current, old) => old === 0 ? (current === 0 ? '—' : 'New') : `${current >= old ? '+' : ''}${Math.round(((current - old) / old) * 100)}%`;
   const chartPoints = chartBuckets.map((bucket, index) => {
     const x = chartBuckets.length === 1 ? 50 : (index / (chartBuckets.length - 1)) * 100;
     const y = 100 - ((bucket.value / chartMax) * 84 + 8);
@@ -187,9 +208,9 @@ export default function Reports() {
 
       <div className="stats-grid">
         <StatCard label="Orders in period" value={orders.length} />
-        <StatCard label="Revenue" value={formatMoney(summary.revenue)} />
+        <StatCard label="Revenue" value={formatMoney(summary.revenue)} trend={previous && change(summary.revenue, previous.revenue)} />
         <StatCard label="Collected" value={formatMoney(summary.collected)} accent="success" />
-        <StatCard label="Net after expenses" value={formatMoney(summary.net)} accent={summary.net >= 0 ? 'success' : 'danger'} />
+        <StatCard label="Net after expenses" value={formatMoney(summary.net)} accent={summary.net >= 0 ? 'success' : 'danger'} trend={previous && change(summary.net, previous.profit)} />
       </div>
 
       <div className="detail-grid" style={{ marginBottom: '1.5rem' }}>
@@ -229,6 +250,6 @@ function Detail({ icon, label, value, strong }) {
   return <div className="detail-row"><span className={`detail-row__label ${icon ? 'label-with-icon' : ''}`}>{icon}{label}</span><span className="detail-row__value" style={strong ? { fontWeight: 700 } : undefined}>{value}</span></div>;
 }
 
-function StatCard({ label, value, accent }) {
-  return <div className={`stat-card ${accent ? `stat-card--${accent}` : ''}`}><div className="stat-card__label">{label}</div><div className="stat-card__value">{value}</div></div>;
+function StatCard({ label, value, accent, trend }) {
+  return <div className={`stat-card ${accent ? `stat-card--${accent}` : ''}`}><div className="stat-card__label">{label}</div><div className="stat-card__value">{value}</div>{trend && <div className={`stat-card__trend ${trend.startsWith('-') ? 'is-down' : ''}`}>{trend} vs previous period</div>}</div>;
 }
