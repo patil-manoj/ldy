@@ -46,6 +46,7 @@ const INITIAL_OPTIONS = {
   delivery_charge: 0,
   notes: '',
   staff_notes: '',
+  token_number: '',
 };
 
 export default function InvoiceDesk() {
@@ -245,6 +246,7 @@ export default function InvoiceDesk() {
         delivery_charge: deliveryCharge,
         notes: orderOptions.notes || null,
         staff_notes: orderOptions.staff_notes || null,
+        token_number: orderOptions.token_number || null,
         weight_kg: roundedWeight,
         items,
       });
@@ -466,6 +468,12 @@ export default function InvoiceDesk() {
                     <label htmlFor="staff-notes">Staff note</label>
                     <input id="staff-notes" className="form-input" placeholder="Visible only to staff" value={orderOptions.staff_notes} onChange={(event) => setOrderOptions((options) => ({ ...options, staff_notes: event.target.value }))} />
                   </div>
+                  {settings.token_number_enabled !== 'false' && (
+                    <div className="form-group">
+                      <label htmlFor="token-number">Token number <span className="field-hint">optional · internal</span></label>
+                      <input id="token-number" className="form-input" placeholder="e.g. 42 or rack A-12" value={orderOptions.token_number} onChange={(event) => setOrderOptions((options) => ({ ...options, token_number: event.target.value }))} />
+                    </div>
+                  )}
                 </div>
               </div>
             </details>

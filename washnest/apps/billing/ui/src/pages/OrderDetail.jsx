@@ -91,6 +91,7 @@ export default function OrderDetail() {
         <h1>
           {order.order_number}
           {order.is_express && <span className="badge badge--express" style={{ marginLeft: 8, fontSize: '.7rem' }}><Zap size={12} aria-hidden="true" /> EXPRESS</span>}
+          {order.token_number && <span className="badge badge--token" style={{ marginLeft: 8 }}>Token {order.token_number}</span>}
         </h1>
         <div className="inline-actions">
           {nextStatus && order.status !== 'cancelled' && (
@@ -139,6 +140,7 @@ export default function OrderDetail() {
 
         <div className="card detail-section">
           <h3>Schedule</h3>
+          <div className="detail-row"><span className="detail-row__label">Internal token</span><span className="detail-row__value">{order.token_number || '—'}</span></div>
           <div className="detail-row"><span className="detail-row__label">Order Date</span><span className="detail-row__value">{order.order_date || '—'}</span></div>
           <div className="detail-row"><span className="detail-row__label">Pickup</span><span className="detail-row__value">{order.pickup_date || '—'} {order.pickup_slot && `(${order.pickup_slot})`}</span></div>
           <div className="detail-row"><span className="detail-row__label">Expected Delivery</span><span className="detail-row__value">{order.expected_delivery_date || '—'} {order.delivery_slot && `(${order.delivery_slot})`}</span></div>

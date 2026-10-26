@@ -8,7 +8,7 @@ import {
 const VALID_STATUSES = new Set(['received', 'picked_up', 'processing', 'ready', 'out_for_delivery', 'delivered', 'cancelled']);
 const VALID_SOURCES = new Set(['walkin', 'whatsapp', 'phone']);
 const VALID_EXPENSE_CATEGORIES = new Set(['detergent', 'rent', 'salary', 'electricity', 'water', 'packaging', 'transport', 'maintenance', 'equipment', 'other']);
-const EDITABLE_SETTINGS = new Set(['shop_name', 'shop_phone', 'shop_address', 'gst_number', 'gst_enabled', 'gst_rate', 'express_multiplier', 'default_delivery_charge', 'next_order_number', 'financial_year']);
+const EDITABLE_SETTINGS = new Set(['shop_name', 'shop_phone', 'shop_address', 'gst_number', 'gst_enabled', 'gst_rate', 'express_multiplier', 'default_delivery_charge', 'next_order_number', 'financial_year', 'token_number_enabled']);
 const ADMIN_SESSION_KEY = 'washnest-admin-session';
 const ADMIN_SESSION_DURATION = 8 * 60 * 60 * 1000;
 const LOGIN_LOCK_DURATION = 15 * 60 * 1000;
@@ -417,6 +417,7 @@ export async function createOrder(body) {
   const totals = calculateTotals(items, body, settings);
   const order = {
     order_number: orderNumber,
+    token_number: nullableText(body.token_number),
     customer_id: customerId,
     status: 'received',
     source: VALID_SOURCES.has(body.source) ? body.source : 'walkin',
@@ -483,7 +484,7 @@ export async function getOrders(params = {}) {
     if (params.is_express !== undefined && params.is_express !== '' && order.is_express !== (params.is_express === true || params.is_express === 'true')) return false;
     if (params.date_from && dateForTimestamp(order.created_at) < params.date_from) return false;
     if (params.date_to && dateForTimestamp(order.created_at) > params.date_to) return false;
-    if (search && ![order.order_number, customer?.name, customer?.phone].some((value) => String(value || '').toLowerCase().includes(search))) return false;
+    if (search && ![order.order_number, order.token_number, customer?.name, customer?.phone].some((value) => String(value || '').toLowerCase().includes(search))) return false;
     return true;
   });
   filtered.sort((left, right) => right.created_at.localeCompare(left.created_at));

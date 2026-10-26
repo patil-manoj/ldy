@@ -14,6 +14,7 @@ export const DEFAULT_SETTINGS = {
   default_delivery_charge: '0',
   next_order_number: '1',
   financial_year: currentFinancialYearCode(),
+  token_number_enabled: 'true',
 };
 
 const PRICE_ROWS = [

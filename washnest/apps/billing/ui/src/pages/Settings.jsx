@@ -138,6 +138,11 @@ export default function Settings() {
             <label htmlFor="shop-address">Business address</label>
             <textarea id="shop-address" className="form-input settings-textarea" rows="3" value={edited.shop_address || ''} onChange={(event) => updateField('shop_address', event.target.value)} />
           </div>
+          <label className="settings-toggle">
+            <span><strong>Show token number field</strong><small>Keep the optional internal token available when creating bills.</small></span>
+            <input type="checkbox" checked={edited.token_number_enabled !== 'false'} onChange={(event) => updateField('token_number_enabled', String(event.target.checked))} />
+            <span className="toggle"><span /></span>
+          </label>
         </section>
 
         <section className="settings-section">

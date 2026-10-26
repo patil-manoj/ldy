@@ -54,7 +54,7 @@ export default function Orders() {
           <label>Search</label>
           <input
             className="form-input"
-            placeholder="Order #, name, or phone..."
+            placeholder="Bill, token, name, or phone..."
             value={filters.search}
             onChange={e => setFilters(f => ({ ...f, search: e.target.value }))}
           />
@@ -70,6 +70,7 @@ export default function Orders() {
               <thead>
                 <tr>
                   <th>Order #</th>
+                  <th>Token</th>
                   <th>Customer</th>
                   <th>Status</th>
                   <th>Items</th>
@@ -86,6 +87,7 @@ export default function Orders() {
                       <Link to={`/orders/${o.id}`}><strong>{o.order_number}</strong></Link>
                       {o.is_express && <span className="badge badge--express" style={{ marginLeft: 6 }} aria-label="Express order"><Zap size={12} aria-hidden="true" /></span>}
                     </td>
+                    <td>{o.token_number || <span style={{ color: 'var(--text-muted)' }}>—</span>}</td>
                     <td>
                       <div>{o.customer?.name || '—'}</div>
                       <small style={{ color: 'var(--text-muted)' }}>{o.customer?.phone}</small>
