@@ -671,8 +671,8 @@ tbody tr:last-child td { border-bottom: 0; }
 .bi-trend-card .analytics-chart__header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
 .bi-trend-card .chart-summary { display: flex; align-items: baseline; gap: .55rem; }
 .bi-trend-card .chart-summary__compare { margin-left: auto; color: var(--success); font-size: .68rem; font-weight: 700; }
-.bi-trend-card .line-chart { min-height: 330px; height: 330px; margin-top: .4rem; }
-.bi-trend-card .line-chart svg { height: 260px; }
+.bi-trend-card .line-chart { min-height: 280px; height: clamp(280px, 30vw, 360px); margin-top: .4rem; padding: 0; }
+.bi-trend-card .line-chart > div { min-width: 0; }
 .bi-grid { display: grid; gap: 1.15rem; margin-bottom: 1.15rem; }
 .bi-grid--primary { grid-template-columns: minmax(0, 1.25fr) minmax(300px, .75fr); }
 .bi-grid--secondary { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -733,4 +733,4 @@ tbody tr:last-child td { border-bottom: 0; }
 .bi-table .is-paid { color: #13865e; font-weight: 700; } .bi-table .is-pending { color: #b47617; font-weight: 700; }
 
 @media (max-width: 1020px) { .bi-kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .bi-grid--secondary { grid-template-columns: repeat(2, minmax(0, 1fr)); } .bi-panel--insights { grid-column: 1 / -1; } }
-@media (max-width: 700px) { .bi-kpi-grid, .bi-grid--primary, .bi-grid--secondary { grid-template-columns: 1fr; } .bi-panel--insights { grid-column: auto; } .bi-trend-card .analytics-chart__header { align-items: stretch; } .bi-trend-card .chart-summary { flex-wrap: wrap; } .bi-trend-card .chart-summary__compare { width: 100%; margin-left: 0; } .mix-chart { grid-template-columns: 1fr; justify-items: center; } .mix-legend { width: 100%; } }
+@media (max-width: 700px) { .bi-kpi-grid, .bi-grid--primary, .bi-grid--secondary { grid-template-columns: 1fr; } .bi-panel--insights { grid-column: auto; } .bi-trend-card .analytics-chart__header { align-items: stretch; } .bi-trend-card .chart-summary { flex-wrap: wrap; } .bi-trend-card .chart-summary__compare { width: 100%; margin-left: 0; } .bi-trend-card .line-chart { height: 280px; min-height: 280px; } .mix-chart { grid-template-columns: 1fr; justify-items: center; } .mix-legend { width: 100%; } }
