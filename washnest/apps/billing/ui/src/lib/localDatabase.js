@@ -2,7 +2,7 @@ import { openDB } from 'idb';
 import { DEFAULT_PRICES, DEFAULT_SETTINGS } from './defaultData';
 
 const DATABASE_NAME = 'washnest-billing';
-const DATABASE_VERSION = 2;
+const DATABASE_VERSION = 3;
 const BACKUP_FORMAT = 'washnest-browser-backup';
 const BACKUP_VERSION = 1;
 
@@ -40,6 +40,26 @@ const databasePromise = openDB(DATABASE_NAME, DATABASE_VERSION, {
 
     if (oldVersion < 2) {
       transaction.objectStore('orders').createIndex('order_number', 'order_number', { unique: true });
+    }
+
+    if (oldVersion < 3) {
+      const normalizeItemName = (name) => String(name || '')
+        .toLowerCase()
+        .replace(/[–—]/g, '-')
+        .replace(/\s+/g, ' ')
+        .trim();
+      const defaultPriceKey = (price) => `${price.service_type}|${normalizeItemName(price.item_name)}`;
+
+      const priceStore = transaction.objectStore('prices');
+      const existingRequest = priceStore.getAll();
+      existingRequest.onsuccess = () => {
+        const existing = new Set((existingRequest.result || []).map(defaultPriceKey));
+        DEFAULT_PRICES.forEach((price) => {
+          if (existing.has(defaultPriceKey(price))) return;
+          const { id: _ignore, ...newPrice } = price;
+          priceStore.add(newPrice);
+        });
+      };
     }
   },
   blocking() {
