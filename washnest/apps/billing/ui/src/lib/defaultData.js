@@ -18,7 +18,7 @@ export const DEFAULT_SETTINGS = {
 };
 
 const PRICE_ROWS = [
-  ['wash_fold', 'Mixed Clothes (minimum 5 kg)', 'clothing', 0, 80, true],
+  ['wash_fold', 'Mixed Clothes', 'clothing', 0, 80, true],
   ['wash_fold', 'Bedsheet (up to 5 kg)', 'bedding', 400, null, false],
   ['wash_fold', 'Blanket (Double)', 'bedding', 350, null, false],
   ['wash_fold', 'Blanket (Single)', 'bedding', 300, null, false],
