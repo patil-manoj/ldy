@@ -18,7 +18,6 @@ export const DEFAULT_SETTINGS = {
 };
 
 const PRICE_ROWS = [
-  ['wash_fold', 'Mixed Clothes (minimum 5 kg)', 'clothing', 0, 80, true],
   ['wash_fold', 'Bedsheet (up to 5 kg)', 'bedding', 400, null, false],
   ['wash_fold', 'Blanket (Double)', 'bedding', 350, null, false],
   ['wash_fold', 'Blanket (Single)', 'bedding', 300, null, false],
@@ -28,7 +27,7 @@ const PRICE_ROWS = [
   ['wash_fold', 'Sofa Covers (up to 4 kg)', 'household', 350, null, false],
   ['wash_fold', 'Door Mats (up to 4 kg)', 'household', 400, null, false],
   ['wash_fold', 'Shoes - Washing (1 pair)', 'accessories', 250, null, false],
-  ['wash_fold', 'Floor Carpet (per sq ft)', 'household', 30, null, false],
+  ['wash_fold', 'Floor Carpet', 'household', 30, null, false],
   ['iron', 'Pant', 'clothing', 15, null, false],
   ['iron', 'Shirt', 'clothing', 15, null, false],
   ['iron', 'Chudidhar (3 pcs)', 'clothing', 60, null, false],
