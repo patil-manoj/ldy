@@ -69,9 +69,10 @@ The deployable static app is written to `apps/billing/static/`.
 This remains a static deployment; no Functions or custom backend is required.
 Set the two `VITE_` variables in Netlify site environment variables, then:
 
-1. Set **Base directory** to `washnest/apps/billing/ui`.
-2. Let `netlify.toml` provide the build and publish settings.
-3. Add `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, and
+1. Leave **Base directory** empty.
+2. Set **Package directory** to `washnest/apps/billing/ui`.
+3. Let `netlify.toml` provide the build and publish settings.
+4. Add `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, and
    `VITE_SUPABASE_ADMIN_EMAIL` as Netlify environment variables.
 
 The same Supabase account can access the same records from the deployed URL,

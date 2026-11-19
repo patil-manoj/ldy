@@ -1,6 +1,6 @@
 [build]
-  command = "npm ci --include=dev && npm run build"
-  publish = "../static"
+  command = "npm --prefix washnest/apps/billing/ui ci --include=dev && npm --prefix washnest/apps/billing/ui run build"
+  publish = "washnest/apps/billing/static"
 
 [[headers]]
   for = "/sw.js"
