@@ -131,22 +131,20 @@ export default function App() {
         {navOpen && <button className="nav-scrim" type="button" onClick={() => setNavOpen(false)} aria-label="Close navigation" />}
 
         <main className="main" id="main-content">
-          <AdminGate>
-            <Routes>
-              <Route path="/" element={<Navigate to="/dashboard" replace />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/orders" element={<Orders />} />
-              <Route path="/orders/new" element={<InvoiceDesk />} />
-              <Route path="/orders/:id" element={<OrderDetail />} />
-              <Route path="/customers" element={<Customers />} />
-              <Route path="/customers/:id" element={<CustomerDetail />} />
-              <Route path="/admin/bills" element={<AdminBills />} />
-              <Route path="/prices" element={<PriceListPage />} />
-              <Route path="/expenses" element={<Expenses />} />
-              <Route path="/reports" element={<Reports />} />
-              <Route path="/settings" element={<Settings />} />
-            </Routes>
-          </AdminGate>
+          <Routes>
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/orders" element={<Orders />} />
+            <Route path="/orders/new" element={<InvoiceDesk />} />
+            <Route path="/orders/:id" element={<OrderDetail />} />
+            <Route path="/customers" element={<Customers />} />
+            <Route path="/customers/:id" element={<CustomerDetail />} />
+            <Route path="/admin/bills" element={<AdminGate><AdminBills /></AdminGate>} />
+            <Route path="/prices" element={<AdminGate><PriceListPage /></AdminGate>} />
+            <Route path="/expenses" element={<Expenses />} />
+            <Route path="/reports" element={<Reports />} />
+            <Route path="/settings" element={<AdminGate><Settings /></AdminGate>} />
+          </Routes>
         </main>
       </div>
     </>

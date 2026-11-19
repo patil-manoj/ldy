@@ -7,7 +7,8 @@ Netlify Function is required.
 ## Storage and authentication
 
 - Business records are stored in normalized Supabase PostgreSQL tables.
-- Supabase Auth email/password protects the billing workspace, and Row Level Security allows only authenticated users.
+- Supabase Auth email/password protects only the admin pages; normal billing pages work without a password.
+- Row Level Security permits anonymous billing operations and authenticated admin settings access.
 - The browser uses `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, and the admin account email.
 - The JSON backup and restore flow remains available from **Admin settings**.
 - Database operations require an online connection; IndexedDB is no longer the source of truth.
@@ -51,8 +52,8 @@ VITE_SUPABASE_ADMIN_EMAIL=admin@example.com
 ```
 
 The publishable/anon key is intended for browser use. Never use the secret
-service-role key in the frontend. Create the matching admin user in
-Supabase **Authentication > Users** before signing in.
+service-role key in the frontend. Create the matching admin user in Supabase **Authentication > Users** before
+opening admin pages.
 
 ## Production build
 

@@ -7,7 +7,6 @@ const DATABASE_NAME = 'washnest-billing';
 const DATABASE_VERSION = 2;
 const BACKUP_FORMAT = 'washnest-browser-backup';
 const BACKUP_VERSION = 1;
-const PRICE_CATALOG_VERSION = 'catalog-2026-11-19-v1';
 
 export const BUSINESS_STORES = ['customers', 'orders', 'prices', 'expenses', 'settings'];
 
@@ -55,34 +54,7 @@ const localDatabasePromise = openDB(DATABASE_NAME, DATABASE_VERSION, {
 
 export async function getDatabase() {
   if (!isSupabaseConfigured) return localDatabasePromise;
-  const database = createRemoteDatabase();
-  if ((await database.getAll('settings')).length === 0) {
-    await Promise.all(Object.entries(DEFAULT_SETTINGS).map(([key, value]) => database.put('settings', { key, value })));
-  }
-  const catalogVersion = await database.get('settings', 'price_catalog_version');
-  if (catalogVersion?.value !== PRICE_CATALOG_VERSION) {
-    const priceTransaction = database.transaction('prices', 'readwrite');
-    await priceTransaction.store.clear();
-    await priceTransaction.done;
-    await Promise.all(DEFAULT_PRICES.map((price) => database.put('prices', price)));
-    await database.put('settings', { key: 'price_catalog_version', value: PRICE_CATALOG_VERSION });
-  }
-  const [remoteCustomers, remoteOrders] = await Promise.all([
-    database.getAll('customers'),
-    database.getAll('orders'),
-  ]);
-  const local = await localDatabasePromise;
-  const [localCustomers, localOrders] = await Promise.all([
-    local.getAll('customers'),
-    local.getAll('orders'),
-  ]);
-  if (remoteCustomers.length === 0 && remoteOrders.length === 0 && (localCustomers.length || localOrders.length)) {
-    await Promise.all(BUSINESS_STORES.map(async (storeName) => {
-      const records = await local.getAll(storeName);
-      await Promise.all(records.map((record) => database.put(storeName, record)));
-    }));
-  }
-  return database;
+  return createRemoteDatabase();
 }
 
 export async function exportLocalData() {
