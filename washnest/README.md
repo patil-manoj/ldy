@@ -9,7 +9,7 @@ Customer → Next.js website → WhatsApp
 
 Owner phone/computer → React billing PWA on a static host
                                │
-                               ├── IndexedDB records on that device
+                               ├── Supabase records via browser SDK
                                ├── Print / WhatsApp bill sharing
                                └── Manual JSON backup and restore
 ```
@@ -19,7 +19,7 @@ Owner phone/computer → React billing PWA on a static host
 ```
 washnest/
 ├── apps/
-│   ├── billing/          # React PWA + IndexedDB — frontend-only billing
+│   ├── billing/          # React PWA + Supabase — static billing frontend
 │   └── website/          # Next.js 14 — public website (Vercel)
 ├── services/
 │   └── whatsapp-bot/     # Node.js webhook — WhatsApp bot (Render.com)
@@ -42,7 +42,9 @@ npm install
 npm run dev
 ```
 
-Open http://127.0.0.1:5173. No Python process or database server is required.
+Open http://127.0.0.1:5173. No Python process or custom database server is required.
+Configure the Supabase variables and create the admin user described in
+[apps/billing/README.md](apps/billing/README.md) before signing in.
 
 ### 2. Build the Billing UI
 
@@ -105,6 +107,7 @@ Schedule via Windows Task Scheduler for nightly runs.
 | Render.com (WhatsApp bot) | Free |
 | Cloudflare Tunnel | Free |
 | Meta WhatsApp API | Free (1000 conv/mo) |
+| Supabase | Free tier |
 | Google Drive backup | Free (15GB) |
 | **Total** | **~₹800/year** |
 
@@ -113,7 +116,7 @@ Schedule via Windows Task Scheduler for nightly runs.
 | Layer | Tool |
 |-------|------|
 | Billing app | React PWA (Vite) |
-| Billing storage | Browser IndexedDB + JSON export/import |
+| Billing storage | Supabase PostgreSQL + JSON export/import |
 | Website | Next.js 14 + Tailwind CSS |
 | WhatsApp bot | Node.js + Express |
 | Tunnel | Cloudflare Tunnel |

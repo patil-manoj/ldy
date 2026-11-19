@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
-import { Building2, Calculator, Database, Download, Hash, KeyRound, Save, ShieldCheck, Upload } from 'lucide-react';
+import { Building2, Calculator, Database, Download, Hash, Save, ShieldCheck, Upload } from 'lucide-react';
 import {
-  changeAdminPassword,
+  deleteArchivedOrders,
   exportBackup,
+  exportArchivedOrders,
   getDataCounts,
   getSettings,
   importBackup,
@@ -15,10 +16,9 @@ export default function Settings() {
   const [settings, setSettings] = useState({});
   const [edited, setEdited] = useState({});
   const [saving, setSaving] = useState(false);
-  const [passwords, setPasswords] = useState({ current: '', next: '', confirmation: '' });
-  const [changingPassword, setChangingPassword] = useState(false);
   const [dataCounts, setDataCounts] = useState(null);
   const [transferringData, setTransferringData] = useState(false);
+  const [archiveUntil, setArchiveUntil] = useState('');
   const restoreInputRef = useRef(null);
 
   useEffect(() => {
@@ -45,28 +45,6 @@ export default function Settings() {
       toast.error(error.message);
     } finally {
       setSaving(false);
-    }
-  };
-
-  const handlePasswordChange = async (event) => {
-    event.preventDefault();
-    if (passwords.next.length < 10) {
-      toast.error('Use at least 10 characters for the new password');
-      return;
-    }
-    if (passwords.next !== passwords.confirmation) {
-      toast.error('New passwords do not match');
-      return;
-    }
-    setChangingPassword(true);
-    try {
-      await changeAdminPassword(passwords.current, passwords.next);
-      setPasswords({ current: '', next: '', confirmation: '' });
-      toast.success('Admin password changed');
-    } catch (error) {
-      toast.error(error.message);
-    } finally {
-      setChangingPassword(false);
     }
   };
 
@@ -102,6 +80,34 @@ export default function Settings() {
       setTimeout(() => globalThis.location.reload(), 700);
     } catch (error) {
       toast.error(error instanceof SyntaxError ? 'The selected file is not valid JSON' : error.message);
+      setTransferringData(false);
+    }
+  };
+
+  const handleArchive = async () => {
+    if (!archiveUntil) {
+      toast.error('Choose an archive date');
+      return;
+    }
+    setTransferringData(true);
+    try {
+      const archive = await exportArchivedOrders(archiveUntil);
+      if (!archive.data.orders.length) throw new Error('No delivered orders found before that date');
+      const blob = new Blob([JSON.stringify(archive, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `washnest-orders-archive-${archiveUntil}.json`;
+      link.click();
+      URL.revokeObjectURL(url);
+      if (confirm(`Downloaded ${archive.data.orders.length} orders. Delete them from Supabase?`)) {
+        await deleteArchivedOrders(archiveUntil);
+        toast.success('Archived orders deleted from Supabase');
+        setTimeout(() => globalThis.location.reload(), 700);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
       setTransferringData(false);
     }
   };
@@ -200,36 +206,10 @@ export default function Settings() {
         </details>
       </form>
 
-      <section className="settings-section password-section">
-        <div className="settings-section__heading">
-          <span><KeyRound size={19} aria-hidden="true" /></span>
-          <div><h2>Admin password</h2><p>Changing it requires your current password.</p></div>
-        </div>
-        <form onSubmit={handlePasswordChange}>
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="current-password">Current password</label>
-              <input id="current-password" type="password" autoComplete="current-password" className="form-input" value={passwords.current} onChange={(event) => setPasswords((current) => ({ ...current, current: event.target.value }))} />
-            </div>
-            <div className="form-group">
-              <label htmlFor="new-password">New password</label>
-              <input id="new-password" type="password" autoComplete="new-password" minLength="10" className="form-input" value={passwords.next} onChange={(event) => setPasswords((current) => ({ ...current, next: event.target.value }))} />
-            </div>
-            <div className="form-group">
-              <label htmlFor="confirm-new-password">Confirm new password</label>
-              <input id="confirm-new-password" type="password" autoComplete="new-password" minLength="10" className="form-input" value={passwords.confirmation} onChange={(event) => setPasswords((current) => ({ ...current, confirmation: event.target.value }))} />
-            </div>
-          </div>
-          <button className="btn btn--ghost" type="submit" disabled={!passwords.current || !passwords.next || changingPassword}>
-            <KeyRound size={16} aria-hidden="true" /> {changingPassword ? 'Changing…' : 'Change password'}
-          </button>
-        </form>
-      </section>
-
       <section className="settings-section data-section">
         <div className="settings-section__heading">
           <span><Database size={19} aria-hidden="true" /></span>
-          <div><h2>Local data</h2><p>Billing records stored in this browser.</p></div>
+          <div><h2>Cloud data</h2><p>Billing records stored in Supabase.</p></div>
         </div>
         <div className="data-summary" aria-label="Local record counts">
           <span><strong>{dataCounts?.orders ?? '—'}</strong> bills</span>
@@ -245,7 +225,14 @@ export default function Settings() {
           </button>
           <input ref={restoreInputRef} className="sr-only" type="file" accept="application/json,.json" onChange={handleRestore} />
         </div>
-        <p className="data-warning">Export before clearing browser data or moving to another device. The admin password is not included.</p>
+        <div className="archive-actions">
+          <label htmlFor="archive-until">Archive delivered orders through</label>
+          <input id="archive-until" type="date" className="form-input" value={archiveUntil} onChange={(event) => setArchiveUntil(event.target.value)} />
+          <button className="btn btn--ghost" type="button" onClick={handleArchive} disabled={transferringData}>
+            <Download size={17} aria-hidden="true" /> Download and archive orders
+          </button>
+        </div>
+        <p className="data-warning">Verify the downloaded archive before deleting cloud records. Archived orders include items, payments, and status history.</p>
       </section>
     </div>
   );

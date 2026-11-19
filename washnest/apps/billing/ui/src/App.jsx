@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Routes, Route, NavLink, Navigate, useLocation } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import {
@@ -27,9 +27,6 @@ import Reports from './pages/Reports';
 import Settings from './pages/Settings';
 import AdminBills from './pages/AdminBills';
 import AdminGate from './components/AdminGate';
-import { logoutAdmin } from './api';
-
-const ADMIN_ROUTE_PREFIXES = ['/admin', '/prices', '/settings'];
 
 const NAV_GROUPS = [
   {
@@ -61,14 +58,6 @@ const NAV_GROUPS = [
 export default function App() {
   const location = useLocation();
   const [navOpen, setNavOpen] = useState(false);
-  const isAdminRoute = ADMIN_ROUTE_PREFIXES.some((prefix) => (
-    location.pathname === prefix || location.pathname.startsWith(`${prefix}/`)
-  ));
-
-  useEffect(() => {
-    if (!isAdminRoute) logoutAdmin();
-  }, [isAdminRoute]);
-
   return (
     <>
       <Toaster
@@ -135,27 +124,29 @@ export default function App() {
 
           <div className="sidebar__footer">
             <ShieldCheck size={17} aria-hidden="true" />
-            <span><strong>Local workspace</strong><small>Data stays on this device</small></span>
+            <span><strong>Cloud workspace</strong><small>Data syncs with Supabase</small></span>
           </div>
         </aside>
 
         {navOpen && <button className="nav-scrim" type="button" onClick={() => setNavOpen(false)} aria-label="Close navigation" />}
 
         <main className="main" id="main-content">
-          <Routes>
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/orders" element={<Orders />} />
-            <Route path="/orders/new" element={<InvoiceDesk />} />
-            <Route path="/orders/:id" element={<OrderDetail />} />
-            <Route path="/customers" element={<Customers />} />
-            <Route path="/customers/:id" element={<CustomerDetail />} />
-            <Route path="/admin/bills" element={<AdminGate><AdminBills /></AdminGate>} />
-            <Route path="/prices" element={<AdminGate><PriceListPage /></AdminGate>} />
-            <Route path="/expenses" element={<Expenses />} />
-            <Route path="/reports" element={<Reports />} />
-            <Route path="/settings" element={<AdminGate><Settings /></AdminGate>} />
-          </Routes>
+          <AdminGate>
+            <Routes>
+              <Route path="/" element={<Navigate to="/dashboard" replace />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/orders" element={<Orders />} />
+              <Route path="/orders/new" element={<InvoiceDesk />} />
+              <Route path="/orders/:id" element={<OrderDetail />} />
+              <Route path="/customers" element={<Customers />} />
+              <Route path="/customers/:id" element={<CustomerDetail />} />
+              <Route path="/admin/bills" element={<AdminBills />} />
+              <Route path="/prices" element={<PriceListPage />} />
+              <Route path="/expenses" element={<Expenses />} />
+              <Route path="/reports" element={<Reports />} />
+              <Route path="/settings" element={<Settings />} />
+            </Routes>
+          </AdminGate>
         </main>
       </div>
     </>

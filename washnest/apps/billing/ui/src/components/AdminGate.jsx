@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Eye, EyeOff, KeyRound, LockKeyhole, LogOut, ShieldCheck } from 'lucide-react';
-import { DEFAULT_ADMIN_PASSWORD, getAuthStatus, loginAdmin, logoutAdmin } from '../api';
+import { getAuthStatus, loginAdmin, logoutAdmin } from '../api';
 
 export default function AdminGate({ children }) {
   const [status, setStatus] = useState(null);
@@ -51,11 +51,7 @@ export default function AdminGate({ children }) {
         <div className="admin-gate__mark"><LockKeyhole size={26} aria-hidden="true" /></div>
         <p className="eyebrow">Protected administration</p>
         <h1 id="admin-gate-title">Unlock admin</h1>
-        <p className="admin-gate__intro">Enter the local password to manage bills, prices, and business settings.</p>
-        {/* {status.uses_default_password && (
-          <p className="admin-gate__default">Default password: <code>{DEFAULT_ADMIN_PASSWORD}</code></p>
-        )} */}
-
+        <p className="admin-gate__intro">Sign in with the configured Supabase account to access the billing workspace.</p>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="admin-password">Admin password</label>

@@ -4,17 +4,12 @@ import {
   getLocalDataCounts,
   importLocalData,
 } from './lib/localDatabase';
+import { isSupabaseConfigured, requireSupabase, supabaseAdminEmail } from './lib/supabaseClient';
 
 const VALID_STATUSES = new Set(['received', 'picked_up', 'processing', 'ready', 'out_for_delivery', 'delivered', 'cancelled']);
 const VALID_SOURCES = new Set(['walkin', 'whatsapp', 'phone']);
 const VALID_EXPENSE_CATEGORIES = new Set(['detergent', 'rent', 'salary', 'electricity', 'water', 'packaging', 'transport', 'maintenance', 'equipment', 'other']);
 const EDITABLE_SETTINGS = new Set(['shop_name', 'shop_phone', 'shop_address', 'gst_number', 'gst_enabled', 'gst_rate', 'express_multiplier', 'default_delivery_charge', 'next_order_number', 'financial_year', 'token_number_enabled']);
-const ADMIN_SESSION_KEY = 'washnest-admin-session';
-const ADMIN_SESSION_DURATION = 8 * 60 * 60 * 1000;
-const LOGIN_LOCK_DURATION = 15 * 60 * 1000;
-const MAX_LOGIN_ATTEMPTS = 5;
-const PASSWORD_ITERATIONS = 310000;
-export const DEFAULT_ADMIN_PASSWORD = 'Washnest*123';
 
 function recordKey(value) {
   const numeric = Number(value);
@@ -122,169 +117,49 @@ async function settingsObject(store) {
   return Object.fromEntries(settings.map(({ key, value }) => [key, value]));
 }
 
-function encodeBytes(bytes) {
-  let binary = '';
-  bytes.forEach((byte) => { binary += String.fromCharCode(byte); });
-  return btoa(binary);
-}
-
-function decodeBytes(value) {
-  return Uint8Array.from(atob(value), (character) => character.charCodeAt(0));
-}
-
-async function passwordHash(password, salt) {
-  if (!globalThis.crypto?.subtle) throw new Error('Password protection requires HTTPS or localhost');
-  const material = await crypto.subtle.importKey(
-    'raw',
-    new TextEncoder().encode(password),
-    'PBKDF2',
-    false,
-    ['deriveBits'],
-  );
-  const bits = await crypto.subtle.deriveBits(
-    { name: 'PBKDF2', hash: 'SHA-256', salt: decodeBytes(salt), iterations: PASSWORD_ITERATIONS },
-    material,
-    256,
-  );
-  return encodeBytes(new Uint8Array(bits));
-}
-
-async function passwordFingerprint(password) {
-  if (!globalThis.crypto?.subtle) throw new Error('Password protection requires HTTPS or localhost');
-  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(password));
-  return encodeBytes(new Uint8Array(digest));
-}
-
-async function createAdminCredential(password, usesDefaultPassword = false) {
-  const salt = encodeBytes(crypto.getRandomValues(new Uint8Array(16)));
-  const credential = {
-    key: 'admin',
-    salt,
-    hash: await passwordHash(password, salt),
-    credential_version: crypto.randomUUID(),
-    failed_attempts: 0,
-    lock_until: 0,
-    uses_default_password: usesDefaultPassword,
-  };
-  if (usesDefaultPassword) credential.default_password_id = await passwordFingerprint(password);
-  return credential;
-}
-
-async function ensureAdminCredential(database) {
-  const existing = await database.get('auth', 'admin');
-  const currentDefaultId = await passwordFingerprint(DEFAULT_ADMIN_PASSWORD);
-  const hasCurrentDefault = existing?.uses_default_password
-    && existing.default_password_id === currentDefaultId;
-  const hasCustomPassword = existing?.uses_default_password === false;
-  if (hasCurrentDefault || hasCustomPassword) return existing;
-
-  if (existing) {
-    const migratedCredential = await createAdminCredential(DEFAULT_ADMIN_PASSWORD, true);
-    await database.put('auth', migratedCredential);
-    sessionStorage.removeItem(ADMIN_SESSION_KEY);
-    return migratedCredential;
-  }
-
-  const credential = await createAdminCredential(DEFAULT_ADMIN_PASSWORD, true);
-  try {
-    await database.add('auth', credential);
-    return credential;
-  } catch (error) {
-    if (error.name !== 'ConstraintError') throw error;
-    return database.get('auth', 'admin');
-  }
-}
-
-function equalHashes(left, right) {
-  if (left.length !== right.length) return false;
-  let difference = 0;
-  for (let index = 0; index < left.length; index += 1) difference |= left.charCodeAt(index) ^ right.charCodeAt(index);
-  return difference === 0;
-}
-
-function readAdminSession(credentialVersion) {
-  try {
-    const session = JSON.parse(sessionStorage.getItem(ADMIN_SESSION_KEY));
-    return session?.credential_version === credentialVersion && session.expires_at > Date.now();
-  } catch {
-    return false;
-  }
-}
-
-function startAdminSession(credentialVersion) {
-  sessionStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify({
-    credential_version: credentialVersion,
-    expires_at: Date.now() + ADMIN_SESSION_DURATION,
-  }));
-}
-
 async function requireAdmin() {
   const status = await getAuthStatus();
   if (!status.authenticated) throw new Error('Unlock admin access first');
 }
 
 export async function getAuthStatus() {
-  const database = await getDatabase();
-  const credential = await ensureAdminCredential(database);
+  if (!isSupabaseConfigured) {
+    return { configured: false, authenticated: true, uses_default_password: false };
+  }
+  const { data, error } = await requireSupabase().auth.getSession();
+  if (error) throw error;
   return {
     configured: true,
-    authenticated: readAdminSession(credential.credential_version),
-    uses_default_password: Boolean(credential.uses_default_password),
+    authenticated: Boolean(data.session),
+    uses_default_password: false,
   };
 }
 
 export async function loginAdmin(password) {
-  const database = await getDatabase();
-  const credential = await ensureAdminCredential(database);
-
-  const now = Date.now();
-  if (credential.lock_until > now) {
-    const minutes = Math.ceil((credential.lock_until - now) / 60000);
-    throw new Error(`Too many attempts. Try again in ${minutes} minute${minutes === 1 ? '' : 's'}`);
-  }
-
-  const candidateHash = await passwordHash(password, credential.salt);
-  if (!equalHashes(candidateHash, credential.hash)) {
-    const previousAttempts = credential.lock_until > 0 ? 0 : numberValue(credential.failed_attempts);
-    const failedAttempts = previousAttempts + 1;
-    credential.failed_attempts = failedAttempts;
-    credential.lock_until = failedAttempts >= MAX_LOGIN_ATTEMPTS ? now + LOGIN_LOCK_DURATION : 0;
-    await database.put('auth', credential);
-    if (credential.lock_until) throw new Error('Too many attempts. Try again in 15 minutes');
-    throw new Error('Incorrect password');
-  }
-
-  credential.failed_attempts = 0;
-  credential.lock_until = 0;
-  await database.put('auth', credential);
-  startAdminSession(credential.credential_version);
-  return { configured: true, authenticated: true, uses_default_password: Boolean(credential.uses_default_password) };
+  if (!isSupabaseConfigured) return getAuthStatus();
+  if (!supabaseAdminEmail) throw new Error('VITE_SUPABASE_ADMIN_EMAIL is not configured');
+  const { error } = await requireSupabase().auth.signInWithPassword({
+    email: supabaseAdminEmail,
+    password,
+  });
+  if (error) throw error;
+  return getAuthStatus();
 }
 
 export async function logoutAdmin() {
-  sessionStorage.removeItem(ADMIN_SESSION_KEY);
-  return { configured: true, authenticated: false };
+  if (isSupabaseConfigured) {
+    const { error } = await requireSupabase().auth.signOut();
+    if (error) throw error;
+  }
+  return { configured: isSupabaseConfigured, authenticated: !isSupabaseConfigured };
 }
 
 export async function changeAdminPassword(currentPassword, newPassword) {
   await requireAdmin();
   if (newPassword.length < 10) throw new Error('Use at least 10 characters');
-  const database = await getDatabase();
-  const credential = await database.get('auth', 'admin');
-  const currentHash = await passwordHash(currentPassword, credential.salt);
-  if (!equalHashes(currentHash, credential.hash)) throw new Error('Current password is incorrect');
-
-  const salt = encodeBytes(crypto.getRandomValues(new Uint8Array(16)));
-  credential.salt = salt;
-  credential.hash = await passwordHash(newPassword, salt);
-  credential.credential_version = crypto.randomUUID();
-  credential.failed_attempts = 0;
-  credential.lock_until = 0;
-  credential.uses_default_password = false;
-  delete credential.default_password_id;
-  await database.put('auth', credential);
-  startAdminSession(credential.credential_version);
-  return { configured: true, authenticated: true, uses_default_password: false };
+  if (!isSupabaseConfigured) throw new Error('Supabase authentication is not configured');
+  const { error } = await requireSupabase().auth.updateUser({ password: newPassword });
+  if (error) throw error;
 }
 
 export async function createCustomer(body) {
@@ -791,4 +666,36 @@ export async function importBackup(backup) {
 
 export async function getDataCounts() {
   return getLocalDataCounts();
+}
+
+export async function exportArchivedOrders(untilDate) {
+  const database = await getDatabase();
+  const orders = (await database.getAll('orders'))
+    .filter((order) => order.status === 'delivered' && (!untilDate || dateForTimestamp(order.created_at) <= untilDate));
+  return {
+    format: 'washnest-orders-archive',
+    version: 1,
+    exported_at: new Date().toISOString(),
+    data: { orders },
+  };
+}
+
+export async function deleteArchivedOrders(untilDate) {
+  const database = await getDatabase();
+  const orders = (await database.getAll('orders'))
+    .filter((order) => order.status === 'delivered' && (!untilDate || dateForTimestamp(order.created_at) <= untilDate));
+  const customerIds = new Set(orders.map((order) => order.customer_id));
+  await Promise.all(orders.map((order) => database.delete('orders', order.id)));
+  await Promise.all([...customerIds].map(async (customerId) => {
+    const customer = await database.get('customers', customerId);
+    if (!customer) return;
+    const remaining = (await database.getAll('orders')).filter((order) => order.customer_id === customerId);
+    customer.total_orders = remaining.length;
+    customer.total_spent = roundMoney(remaining.reduce((sum, order) => sum + order.total_amount, 0));
+    customer.outstanding_balance = roundMoney(remaining
+      .filter((order) => order.status !== 'cancelled')
+      .reduce((sum, order) => sum + order.amount_due, 0));
+    await database.put('customers', customer);
+  }));
+  return orders.length;
 }

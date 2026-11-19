@@ -1,30 +1,34 @@
 # Wash Nest Billing
 
-Frontend-only billing and order management. The React app stores data in IndexedDB in the current browser, works offline after its first load, and does not call or require a backend.
+Static React billing and order management. The app is deployed to Netlify and
+connects directly from the browser to Supabase; no custom server, VPS, API, or
+Netlify Function is required.
 
-## Supported without a backend
+## Storage and authentication
 
-- Create and search customers.
-- Create bills with seeded or custom prices.
+- Business records are stored in normalized Supabase PostgreSQL tables.
+- Supabase Auth email/password protects the billing workspace, and Row Level Security allows only authenticated users.
+- The browser uses `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, and the admin account email.
+- The JSON backup and restore flow remains available from **Admin settings**.
+- Database operations require an online connection; IndexedDB is no longer the source of truth.
+
+## Features
+
+- Create and search customers and bills.
 - Calculate weight rounding, discounts, delivery, express charges, and GST.
-- Record full or partial payments and order status history.
-- Permanently delete bills from the protected **Manage bills** page.
-- View orders, customer history, dashboard totals, expenses, and daily reports.
-- Print receipts and open a prepared bill in WhatsApp.
-- Install the app on a phone or computer as a PWA.
+- Record payments and order status history.
+- Manage prices, expenses, settings, dashboards, and daily reports.
+- Supports three services: washing, ironing, and dry cleaning.
+- Print receipts, open prepared bills in WhatsApp, and install the PWA.
 - Export and restore all business data with a JSON backup.
 
-## Frontend-only limits
+## Cloud limits
 
-- Data belongs to one browser on one device. There is no automatic phone-to-computer or multi-device sync.
-- Clearing site data, uninstalling the browser, or losing the device can erase records unless a backup was downloaded.
-- The local admin password prevents casual access only. Browser code and data can be inspected or changed by someone with device access.
-- A frontend `.env` password would be included in the public JavaScript bundle, so it cannot provide secure authentication.
-- Automatic WhatsApp/SMS sending, automatic cloud backup, secure user accounts, tamper-proof audit logs, and concurrent terminals require a backend or managed cloud service.
+- Supabase free projects may pause after inactivity and have usage limits.
+- Offline-first operation is not provided by the remote adapter; keep exporting backups.
+- Automatic WhatsApp/SMS sending and tamper-proof audit logs are outside this app.
 
 ## Development
-
-Only Node.js is required:
 
 ```bash
 cd apps/billing/ui
@@ -32,9 +36,23 @@ npm install
 npm run dev
 ```
 
-Open http://127.0.0.1:5173. Default prices and settings are added automatically on the first visit.
+Set the Supabase variables below in `apps/billing/ui/.env`.
 
-The default local admin password is `Washnest*123`. Change it from **Admin settings** after signing in.
+## Configure Supabase
+
+1. Create a free Supabase project.
+2. In the Supabase SQL Editor, run [`supabase/schema.sql`](../../../supabase/schema.sql).
+3. Set:
+
+```env
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your-public-anon-key
+VITE_SUPABASE_ADMIN_EMAIL=admin@example.com
+```
+
+The publishable/anon key is intended for browser use. Never use the secret
+service-role key in the frontend. Create the matching admin user in
+Supabase **Authentication > Users** before signing in.
 
 ## Production build
 
@@ -44,36 +62,29 @@ npm install
 npm run build
 ```
 
-The deployable static app is written to `apps/billing/static/`. Upload that directory to an HTTPS static host such as Netlify or Cloudflare Pages. The included `_redirects` file supplies the SPA fallback on Netlify.
-
-PWA installation and local password hashing require HTTPS on a hosted site. Localhost is allowed during development.
+The deployable static app is written to `apps/billing/static/`.
 
 ## Deploy to Netlify
 
-Yes, this is a frontend-only static app and works on Netlify without Functions or another backend.
+This remains a static deployment; no Functions or custom backend is required.
+Set the two `VITE_` variables in Netlify site environment variables, then:
 
-When importing this monorepo in Netlify:
+1. Set **Base directory** to `washnest/apps/billing/ui`.
+2. Let `netlify.toml` provide the build and publish settings.
+3. Add `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, and
+   `VITE_SUPABASE_ADMIN_EMAIL` as Netlify environment variables.
 
-1. Set **Package directory** to `washnest/apps/billing/ui`.
-2. Leave **Base directory** empty so it remains the repository root.
-3. Clear any **Publish directory** or **Build command** previously entered in the Netlify UI; the repository configuration supplies both.
-4. Netlify will read `washnest/apps/billing/ui/netlify.toml`, install the locked UI dependencies, run the billing build, and publish `washnest/apps/billing/static`.
-
-If Netlify requires manual overrides, use build command `npm --prefix washnest/apps/billing/ui ci --include=dev && npm --prefix washnest/apps/billing/ui run build` and publish directory `washnest/apps/billing/static`. Do not use `apps/billing/ui` as the publish directory; that is a source path and also omits this repository's leading `washnest/` directory.
-
-Use the stable production URL, such as `your-site.netlify.app`, for real billing. Normal redeploys to that same URL keep the browser's IndexedDB records. Deploy Preview URLs, a custom domain, another browser, or another device each have separate storage. Export a backup before changing URL or device, then restore it at the new location.
+The same Supabase account can access the same records from the deployed URL,
+another browser, or another device.
 
 ## Phone workflow
 
-1. Open the hosted HTTPS URL on the phone that will hold the billing records.
-2. Use the browser menu to add Wash Nest to the home screen.
-3. Open an Administration page and unlock it with `Washnest*123`.
-4. Change the password in **Admin settings**.
-5. Enter shop details and prices, then create and send bills from the app.
-6. Download a JSON backup regularly from **Admin settings > Local data**.
-
-Each hostname has separate browser storage. Export a backup before changing the deployed URL, browser, phone, or later moving to a computer, then restore it on the new device.
+1. Open the hosted HTTPS URL on the phone.
+2. Add Wash Nest to the home screen.
+3. Configure shop details and prices, then create and send bills.
+4. Download a JSON backup regularly from **Admin settings > Cloud data**.
 
 ## Backups
 
-The JSON backup contains customers, bills, payments, order history, prices, expenses, and business settings. It does not contain the local admin password. Restoring a backup replaces all business data in the current browser.
+The JSON backup contains customers, bills, payments, order history, prices,
+expenses, and business settings. It does not contain the Supabase password.
