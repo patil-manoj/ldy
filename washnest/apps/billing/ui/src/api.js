@@ -592,7 +592,11 @@ export async function getDashboard() {
   const today = localDateString();
   const todaysOrders = orders.filter((order) => dateForTimestamp(order.created_at) === today);
   const todaysPayments = orders.flatMap((order) => order.payments).filter((payment) => dateForTimestamp(payment.received_at) === today);
+  const recentOrders = [...orders]
+    .sort((left, right) => right.created_at.localeCompare(left.created_at))
+    .slice(0, 200);
   return {
+    recent_orders: recentOrders,
     total_orders_today: todaysOrders.length,
     revenue_today: roundMoney(todaysOrders.reduce((sum, order) => sum + order.total_amount, 0)),
     collected_today: roundMoney(todaysPayments.reduce((sum, payment) => sum + payment.amount, 0)),

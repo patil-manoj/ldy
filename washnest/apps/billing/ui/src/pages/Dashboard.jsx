@@ -1,20 +1,49 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AlertCircle, ArrowRight, CheckCircle2, Clock3, PackageCheck, Plus, Receipt, Sparkles, TrendingUp, WalletCards } from 'lucide-react';
-import { getDashboard, getOrders } from '../api';
+import { getDashboard } from '../api';
 import { formatMoney } from '../lib/billing';
 
 export default function Dashboard() {
   const [data, setData] = useState(null);
-  const [recentOrders, setRecentOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [reload, setReload] = useState(0);
+
   useEffect(() => {
-    Promise.all([getDashboard(), getOrders({ limit: 200 })])
-      .then(([dashboard, orders]) => { setData(dashboard); setRecentOrders(orders); })
-      .catch(console.error);
-  }, []);
+    let active = true;
+    setLoading(true);
+    setError('');
 
-  if (!data) return <p>Loading…</p>;
+    getDashboard()
+      .then((dashboard) => {
+        if (active) setData(dashboard);
+      })
+      .catch((loadError) => {
+        console.error('Failed to load dashboard', loadError);
+        if (active) setError(loadError instanceof Error ? loadError.message : 'An unexpected error occurred.');
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
 
+    return () => { active = false; };
+  }, [reload]);
+
+  if (loading) return <p>Loading dashboard…</p>;
+  if (error) {
+    return (
+      <section role="alert">
+        <p>Couldn’t load the dashboard: {error}</p>
+        <button className="btn btn--primary" type="button" onClick={() => setReload((current) => current + 1)}>
+          Try again
+        </button>
+      </section>
+    );
+  }
+  if (!data) return <p>Dashboard data is unavailable.</p>;
+
+  const recentOrders = data.recent_orders;
   const today = new Intl.DateTimeFormat('en-IN', {
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
   }).format(new Date());
