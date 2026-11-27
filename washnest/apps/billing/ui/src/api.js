@@ -142,7 +142,12 @@ export async function loginAdmin(password) {
     email: supabaseAdminEmail,
     password,
   });
-  if (error) throw error;
+  if (error) {
+    if (error.code === 'email_provider_disabled' || error.message.toLowerCase().includes('email logins are disabled')) {
+      throw new Error('Email/password sign-in is disabled for this Supabase project. Enable the Email provider in Authentication > Sign In / Providers, then try again.');
+    }
+    throw error;
+  }
   return getAuthStatus();
 }
 

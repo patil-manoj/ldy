@@ -104,13 +104,15 @@ async function upsertRow(storeName, value) {
     return upsertOrder(value);
   }
 
-  const { error } = await requireSupabase()
+  const { data, error } = await requireSupabase()
     .from(TABLES[storeName])
-    .upsert(value);
+    .upsert(value)
+    .select()
+    .single();
 
   if (error) throw error;
 
-  return value.id ?? value.key;
+  return data.id ?? data.key;
 }
 
 class RemoteTransaction {

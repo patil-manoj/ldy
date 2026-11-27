@@ -52,8 +52,9 @@ VITE_SUPABASE_ADMIN_EMAIL=admin@example.com
 ```
 
 The publishable/anon key is intended for browser use. Never use the secret
-service-role key in the frontend. Create the matching admin user in Supabase **Authentication > Users** before
-opening admin pages.
+service-role key in the frontend. Ensure the Email provider is enabled in
+Supabase **Authentication > Sign In / Providers**, then create the matching
+admin user in **Authentication > Users** before opening admin pages.
 
 ## Production build
 
