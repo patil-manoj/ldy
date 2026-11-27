@@ -186,6 +186,10 @@ class RemoteStore {
     return selectRows(this.name);
   }
 
+  async count() {
+    return (await this.getAll()).length;
+  }
+
   index(indexName) {
     return {
       get: async (value) =>
